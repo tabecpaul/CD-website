@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-teal: #2b5e5c;
+  --color-tan: #d4a573;
+  --color-cream: #f5f1e7;
+  --color-line: #e5e1d6;
+
+  --color-background: #ffffff;
+  --color-foreground: var(--color-teal);
+
+  --font-sans: var(--font-noto-sans-kr);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), sans-serif;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}

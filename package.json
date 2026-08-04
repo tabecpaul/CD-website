@@ -1,0 +1,15 @@
+{
+  "name": "newland",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:www": "npm run dev --workspace=www",
+    "dev:admin": "npm run dev --workspace=admin",
+    "build:www": "npm run build --workspace=www",
+    "build:admin": "npm run build --workspace=admin",
+    "lint:www": "npm run lint --workspace=www",
+    "lint:admin": "npm run lint --workspace=admin"
+  }
+}
