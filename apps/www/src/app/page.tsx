@@ -5,17 +5,21 @@ import Process from "@/components/sections/Process";
 import Testimonials from "@/components/sections/Testimonials";
 import FAQ from "@/components/sections/FAQ";
 import ContactForm from "@/components/sections/ContactForm";
+import Footer from "@/components/sections/Footer";
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col">
-      <Hero />
-      <Empathy />
-      <CareerDirect />
-      <Process />
-      <Testimonials />
-      <FAQ />
-      <ContactForm />
-    </main>
+    <>
+      <main className="flex flex-1 flex-col">
+        <Hero />
+        <Empathy />
+        <CareerDirect />
+        <Process />
+        <Testimonials />
+        <FAQ />
+        <ContactForm />
+      </main>
+      <Footer />
+    </>
   );
 }
