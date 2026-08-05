@@ -1,0 +1,26 @@
+name: Database Migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/db/drizzle/**"
+  workflow_dispatch: {}
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Apply pending migrations to production
+        run: npm run db:migrate --workspace=@newland/db
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
