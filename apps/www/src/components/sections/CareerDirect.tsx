@@ -133,9 +133,10 @@ export default function CareerDirect() {
           viewport={{ once: true, amount: 0.8 }}
           variants={fadeUp}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center text-xs text-navy/40 sm:text-sm"
+          className="text-center text-sm font-medium text-navy/60 sm:text-base"
         >
-          30년 이상 검증된 시스템 · 84개국 · 40만+ 명이 함께한 여정
+          30년 이상 검증된 시스템 · 84개국 · 21개 언어 사용 중 · 40만+ 명이
+          함께한 여정
         </motion.p>
 
         <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3">
