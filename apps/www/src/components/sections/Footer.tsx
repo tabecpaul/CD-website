@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Phone, Mail } from "lucide-react";
 
 export default function Footer() {
@@ -5,12 +6,18 @@ export default function Footer() {
     <footer className="bg-navy px-6 py-14 sm:px-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
         <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
-          <div className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-full bg-gold text-sm font-black text-cream">
-              CD
-            </span>
-            <span className="text-lg font-black tracking-tight text-cream">
-              Career Direct<span className="text-gold"> Korea</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center rounded-xl bg-cream px-3 py-2">
+              <Image
+                src="/career-direct-logo.png"
+                alt="Career Direct"
+                width={150}
+                height={42}
+                className="h-[30px] w-auto"
+              />
+            </div>
+            <span className="text-lg font-black tracking-tight text-gold">
+              Korea
             </span>
           </div>
 
