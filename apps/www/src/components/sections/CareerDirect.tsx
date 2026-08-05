@@ -100,8 +100,8 @@ export default function CareerDirect() {
             aria-hidden
             className="absolute inset-10 rounded-full border-2 border-dashed border-navy/15 sm:inset-14"
           />
-          <div className="absolute top-1/2 left-1/2 z-10 flex size-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-navy text-white shadow-lg sm:size-24">
-            <span className="text-lg font-bold sm:text-xl">나</span>
+          <div className="absolute top-1/2 left-1/2 z-10 flex size-10 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-navy text-white shadow-lg sm:size-12">
+            <span className="text-base font-bold sm:text-lg">나</span>
           </div>
 
           {compassPoints.map(({ icon: Icon, label, desc, position }, i) => (
@@ -116,11 +116,11 @@ export default function CareerDirect() {
                 delay: 0.2 + i * 0.1,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className={`absolute z-10 flex w-24 flex-col items-center gap-1 rounded-2xl bg-white px-3 py-3 text-center shadow-md sm:w-28 sm:px-4 sm:py-4 ${position}`}
+              className={`absolute z-10 flex w-28 flex-col items-center gap-1.5 rounded-2xl border border-navy/10 bg-white px-3 py-3.5 text-center shadow-lg sm:w-32 sm:px-4 sm:py-4 ${position}`}
             >
-              <Icon className="size-5 text-accent-blue" strokeWidth={1.75} />
-              <span className="text-xs font-semibold text-navy">{label}</span>
-              <span className="whitespace-pre-line text-[10px] leading-tight text-navy/50">
+              <Icon className="size-6 text-accent-blue" strokeWidth={1.75} />
+              <span className="text-sm font-bold text-navy">{label}</span>
+              <span className="whitespace-pre-line text-[11px] leading-tight text-navy/65">
                 {desc}
               </span>
             </motion.div>
