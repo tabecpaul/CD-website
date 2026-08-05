@@ -4,6 +4,7 @@ import CareerDirect from "@/components/sections/CareerDirect";
 import Process from "@/components/sections/Process";
 import Testimonials from "@/components/sections/Testimonials";
 import FAQ from "@/components/sections/FAQ";
+import ContactForm from "@/components/sections/ContactForm";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <Process />
       <Testimonials />
       <FAQ />
+      <ContactForm />
     </main>
   );
 }
