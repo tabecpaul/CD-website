@@ -20,12 +20,12 @@ const steps: Step[] = [
   },
   {
     icon: ClipboardList,
-    title: "Career Direct 진단 (약 1시간)",
+    title: "Career Direct 온라인 진단 (약 60~90분 소요)",
     desc: "성격, 흥미, 재능, 가치관 4요소를 통합적으로 평가하는 공인 진단을 진행합니다.",
   },
   {
     icon: Users,
-    title: "상세 해석 상담",
+    title: "보고서 해석 컨설팅",
     desc: "공인 컨설턴트와 함께 진단 결과를 깊이 있게 해석하고, 나에게 어떤 의미인지 이해합니다.",
   },
   {
