@@ -9,8 +9,8 @@ const notoSansKR = Noto_Sans_KR({
 });
 
 export const metadata: Metadata = {
-  title: "관리자",
-  description: "진로 솔루션 관리자 대시보드",
+  title: "admin",
+  description: "",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
