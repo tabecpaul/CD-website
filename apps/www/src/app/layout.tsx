@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import { Noto_Sans_KR } from "next/font/google";
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 
-const notoSansKR = Noto_Sans_KR({
-  variable: "--font-noto-sans-kr",
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "900"],
-});
-
 export const metadata: Metadata = {
-  title: "www",
-  description: "",
+  title: "Career Direct Korea",
+  description:
+    "진로는 직업을 찾는 것이 아니라 하나님이 지으신 나를 발견하고 소명을 분별하는 과정입니다.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ko" className={`${notoSansKR.variable} h-full antialiased`}>
+    <html lang="ko" className="h-full antialiased">
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
