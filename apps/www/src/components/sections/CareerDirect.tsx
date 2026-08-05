@@ -67,7 +67,7 @@ const fadeUp = {
 
 export default function CareerDirect() {
   return (
-    <section id="career-direct" className="bg-white px-6 py-24 sm:px-10 sm:py-28">
+    <section id="career-direct" className="bg-cream px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-16">
         <motion.div
           initial="hidden"
@@ -100,7 +100,7 @@ export default function CareerDirect() {
             aria-hidden
             className="absolute inset-10 rounded-full border-2 border-dashed border-navy/15 sm:inset-14"
           />
-          <div className="absolute top-1/2 left-1/2 z-10 flex size-10 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-navy text-white shadow-lg sm:size-12">
+          <div className="absolute top-1/2 left-1/2 z-10 flex size-10 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full bg-navy text-cream shadow-lg sm:size-12">
             <span className="text-base font-bold sm:text-lg">나</span>
           </div>
 
@@ -116,9 +116,9 @@ export default function CareerDirect() {
                 delay: 0.2 + i * 0.1,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className={`absolute z-10 flex w-28 flex-col items-center gap-1.5 rounded-2xl border border-navy/10 bg-white px-3 py-3.5 text-center shadow-lg sm:w-32 sm:px-4 sm:py-4 ${position}`}
+              className={`absolute z-10 flex w-28 flex-col items-center gap-1.5 rounded-2xl border border-navy/10 bg-cream px-3 py-3.5 text-center shadow-lg sm:w-32 sm:px-4 sm:py-4 ${position}`}
             >
-              <Icon className="size-6 text-accent-blue" strokeWidth={1.75} />
+              <Icon className="size-6 text-teal" strokeWidth={1.75} />
               <span className="text-sm font-bold text-navy">{label}</span>
               <span className="whitespace-pre-line text-[11px] leading-tight text-navy/65">
                 {desc}
@@ -152,9 +152,9 @@ export default function CareerDirect() {
                 delay: i * 0.1,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="flex flex-col gap-2 rounded-2xl bg-light-gray px-6 py-7"
+              className="flex flex-col gap-2 rounded-2xl bg-gray/15 px-6 py-7"
             >
-              <span className="text-xs font-semibold tracking-wide text-accent-blue">
+              <span className="text-xs font-semibold tracking-wide text-teal">
                 STEP {i + 1}
               </span>
               <span className="text-base font-bold text-navy">
@@ -176,10 +176,10 @@ export default function CareerDirect() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto flex max-w-xl flex-col items-center gap-3 rounded-3xl bg-navy px-8 py-10 text-center sm:px-12"
         >
-          <span className="text-3xl font-black text-accent-blue">
+          <span className="text-3xl font-black text-gold">
             &ldquo;
           </span>
-          <p className="text-lg font-semibold leading-8 text-white sm:text-xl">
+          <p className="text-lg font-semibold leading-8 text-cream sm:text-xl">
             진로는 직업을 찾는 것이 아니라, 하나님이 지으신 &lsquo;나&rsquo;를
             이해하고 소명을 분별하는 과정입니다.
           </p>

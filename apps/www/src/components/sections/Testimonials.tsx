@@ -30,7 +30,7 @@ const fadeUp = {
 
 export default function Testimonials() {
   return (
-    <section className="bg-white px-6 py-24 sm:px-10 sm:py-28">
+    <section className="bg-cream px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-14">
         <motion.div
           initial="hidden"
@@ -61,10 +61,10 @@ export default function Testimonials() {
                 delay: i * 0.1,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="flex flex-col gap-5 rounded-2xl border border-navy/10 bg-light-gray px-7 py-8 shadow-sm"
+              className="flex flex-col gap-5 rounded-2xl border border-navy/10 bg-gray/15 px-7 py-8 shadow-sm"
             >
               <Quote
-                className="size-6 text-accent-blue"
+                className="size-6 text-teal"
                 strokeWidth={1.75}
                 fill="currentColor"
                 fillOpacity={0.12}

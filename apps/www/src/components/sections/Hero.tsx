@@ -14,10 +14,10 @@ const fadeUp = {
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white px-6 py-28 sm:px-10 sm:py-36">
+    <section className="relative overflow-hidden bg-cream px-6 py-28 sm:px-10 sm:py-36">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] bg-gradient-to-b from-light-gray to-white"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] bg-gradient-to-b from-gray/25 to-cream"
       />
 
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-8 text-center">
@@ -62,7 +62,7 @@ export default function Hero() {
         >
           <a
             href="#contact"
-            className="group flex h-12 items-center justify-center gap-2 rounded-full bg-accent-blue px-7 text-sm font-semibold text-white transition-colors hover:bg-accent-blue/90"
+            className="group flex h-12 items-center justify-center gap-2 rounded-full bg-gold px-7 text-sm font-semibold text-cream transition-colors hover:bg-gold/90"
           >
             무료 진로 상담 신청
             <ArrowRight
@@ -72,7 +72,7 @@ export default function Hero() {
           </a>
           <a
             href="#process"
-            className="flex h-12 items-center justify-center rounded-full border border-navy/15 px-7 text-sm font-semibold text-navy transition-colors hover:bg-light-gray"
+            className="flex h-12 items-center justify-center rounded-full border border-navy/15 px-7 text-sm font-semibold text-navy transition-colors hover:bg-gray/20"
           >
             프로그램 알아보기
           </a>

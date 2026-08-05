@@ -39,7 +39,7 @@ const fadeUp = {
 
 export default function Empathy() {
   return (
-    <section className="bg-light-gray px-6 py-24 sm:px-10 sm:py-28">
+    <section className="bg-gray/15 px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-14">
         <motion.div
           initial="hidden"
@@ -71,9 +71,9 @@ export default function Empathy() {
                 delay: i * 0.08,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="flex flex-col items-center gap-3 rounded-2xl bg-white px-5 py-8 text-center shadow-sm"
+              className="flex flex-col items-center gap-3 rounded-2xl bg-cream px-5 py-8 text-center shadow-sm"
             >
-              <span className="text-4xl font-bold tracking-tight text-accent-blue">
+              <span className="text-4xl font-bold tracking-tight text-gold">
                 {value}
               </span>
               <p className="text-xs font-medium leading-5 text-navy/80">

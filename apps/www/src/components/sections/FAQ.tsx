@@ -42,7 +42,7 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="bg-light-gray px-6 py-24 sm:px-10 sm:py-28">
+    <section className="bg-gray/15 px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-14">
         <motion.div
           initial="hidden"
@@ -75,7 +75,7 @@ export default function FAQ() {
                   delay: i * 0.05,
                   ease: [0.16, 1, 0.3, 1],
                 }}
-                className="overflow-hidden rounded-2xl border border-navy/10 bg-white"
+                className="overflow-hidden rounded-2xl border border-navy/10 bg-cream"
               >
                 <button
                   type="button"
@@ -87,7 +87,7 @@ export default function FAQ() {
                     {q}
                   </span>
                   <ChevronDown
-                    className={`size-5 shrink-0 text-accent-blue transition-transform ${
+                    className={`size-5 shrink-0 text-teal transition-transform ${
                       open ? "rotate-180" : ""
                     }`}
                     strokeWidth={2}

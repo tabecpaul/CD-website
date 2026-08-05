@@ -47,7 +47,7 @@ const fadeUp = {
 
 export default function Process() {
   return (
-    <section className="bg-light-gray px-6 py-24 sm:px-10 sm:py-28">
+    <section className="bg-gray/15 px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-14">
         <motion.div
           initial="hidden"
@@ -84,12 +84,12 @@ export default function Process() {
               }}
               className="relative flex items-start gap-5"
             >
-              <div className="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full bg-accent-blue text-sm font-bold text-white shadow-md">
+              <div className="relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full bg-teal text-sm font-bold text-cream shadow-md">
                 {i + 1}
               </div>
               <div className="flex flex-col gap-1.5 pt-1.5">
                 <div className="flex items-center gap-2">
-                  <Icon className="size-4 text-accent-blue" strokeWidth={2} />
+                  <Icon className="size-4 text-teal" strokeWidth={2} />
                   <span className="text-base font-bold text-navy">
                     {title}
                   </span>
@@ -107,7 +107,7 @@ export default function Process() {
           variants={fadeUp}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           href="#contact"
-          className="flex h-12 items-center justify-center rounded-full bg-accent-blue px-8 text-sm font-semibold text-white transition-colors hover:bg-accent-blue/90"
+          className="flex h-12 items-center justify-center rounded-full bg-gold px-8 text-sm font-semibold text-cream transition-colors hover:bg-gold/90"
         >
           무료 진로 상담 신청
         </motion.a>

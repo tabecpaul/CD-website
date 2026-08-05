@@ -26,13 +26,20 @@ Inter
 
 ## Color
 
-Navy
+Navy — #17324d
 
-White
+Cream — #f7f3eb
 
-Light Gray
+Gold — #c9a24e
 
-Accent Blue
+Teal — #4f9ea9
+
+Gray — #d7d7d7
+
+Gold is the primary accent (CTA buttons, key numbers, brand mark). Teal is
+the secondary accent (decorative icons, labels). Cream is the base
+background; Gray is used at low opacity for alternating section bands,
+card fills, and borders.
 
 ## Animation
 

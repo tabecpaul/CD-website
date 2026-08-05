@@ -19,7 +19,7 @@ export default function ContactForm() {
   }
 
   return (
-    <section id="contact" className="bg-white px-6 py-24 sm:px-10 sm:py-28">
+    <section id="contact" className="bg-cream px-6 py-24 sm:px-10 sm:py-28">
       <div className="mx-auto flex w-full max-w-md flex-col items-center gap-10">
         <motion.div
           initial="hidden"
@@ -44,7 +44,7 @@ export default function ContactForm() {
           viewport={{ once: true, amount: 0.6 }}
           variants={fadeUp}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full rounded-3xl border border-navy/10 bg-light-gray px-7 py-8 sm:px-9 sm:py-9"
+          className="w-full rounded-3xl border border-navy/10 bg-gray/15 px-7 py-8 sm:px-9 sm:py-9"
         >
           {submitted ? (
             <div className="flex flex-col items-center gap-2 py-8 text-center">
@@ -70,7 +70,7 @@ export default function ContactForm() {
                   type="text"
                   required
                   placeholder="이름을 입력해주세요"
-                  className="h-11 rounded-xl border border-navy/15 bg-white px-4 text-sm text-navy placeholder:text-navy/30 focus:border-accent-blue focus:outline-none"
+                  className="h-11 rounded-xl border border-navy/15 bg-cream px-4 text-sm text-navy placeholder:text-navy/30 focus:border-gold focus:outline-none"
                 />
               </div>
 
@@ -87,7 +87,7 @@ export default function ContactForm() {
                   type="tel"
                   required
                   placeholder="010-0000-0000"
-                  className="h-11 rounded-xl border border-navy/15 bg-white px-4 text-sm text-navy placeholder:text-navy/30 focus:border-accent-blue focus:outline-none"
+                  className="h-11 rounded-xl border border-navy/15 bg-cream px-4 text-sm text-navy placeholder:text-navy/30 focus:border-gold focus:outline-none"
                 />
               </div>
 
@@ -103,7 +103,7 @@ export default function ContactForm() {
                   name="timeSlot"
                   required
                   defaultValue=""
-                  className="h-11 rounded-xl border border-navy/15 bg-white px-4 text-sm text-navy focus:border-accent-blue focus:outline-none"
+                  className="h-11 rounded-xl border border-navy/15 bg-cream px-4 text-sm text-navy focus:border-gold focus:outline-none"
                 >
                   <option value="" disabled>
                     시간대를 선택해주세요
@@ -118,7 +118,7 @@ export default function ContactForm() {
 
               <button
                 type="submit"
-                className="mt-2 flex h-12 items-center justify-center rounded-full bg-accent-blue text-sm font-semibold text-white transition-colors hover:bg-accent-blue/90"
+                className="mt-2 flex h-12 items-center justify-center rounded-full bg-gold text-sm font-semibold text-cream transition-colors hover:bg-gold/90"
               >
                 무료 진로 상담 신청
               </button>

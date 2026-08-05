@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #0a1a33;
-  --color-cd-white: #ffffff;
-  --color-light-gray: #f3f4f6;
-  --color-accent-blue: #2563eb;
+  --color-navy: #17324d;
+  --color-cream: #f7f3eb;
+  --color-gold: #c9a24e;
+  --color-teal: #4f9ea9;
+  --color-gray: #d7d7d7;
 
-  --color-background: var(--color-cd-white);
+  --color-background: var(--color-cream);
   --color-foreground: var(--color-navy);
 
   --font-sans: "Pretendard Variable", "Inter", sans-serif;

@@ -4,6 +4,16 @@
 
 Decision
 
+Color palette fixed to Navy #17324d / Cream #f7f3eb / Gold #c9a24e / Teal #4f9ea9 / Gray #d7d7d7.
+
+Reason
+
+Restores the original brand palette (previously used in apps/admin before the docs/content reset). Gold is the primary accent, teal the secondary accent.
+
+---
+
+Decision
+
 Apple Style adopted.
 
 Reason
