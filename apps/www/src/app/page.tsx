@@ -1,6 +1,7 @@
 import Hero from "@/components/sections/Hero";
 import Empathy from "@/components/sections/Empathy";
 import CareerDirect from "@/components/sections/CareerDirect";
+import Process from "@/components/sections/Process";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Hero />
       <Empathy />
       <CareerDirect />
+      <Process />
     </main>
   );
 }
