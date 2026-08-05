@@ -1,36 +1,34 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Brain, Users, Coins, Compass, Search } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-type Point = { icon: LucideIcon; title: string; desc: string };
+type Stat = { value: string; desc: string; source: string };
 
-const points: Point[] = [
+const stats: Stat[] = [
   {
-    icon: Brain,
-    title: "나를 잘 모릅니다.",
-    desc: "성격, 강점, 재능을 객관적으로 모른 채 고민합니다.",
+    value: "32.2%",
+    desc: "청년 3명 중 1명이 최근 1년간 번아웃을 경험했습니다.",
+    source: "국가데이터처 『청년 삶의 질 2025』",
   },
   {
-    icon: Users,
-    title: "다른 사람의 기대를 따릅니다.",
-    desc: "부모, 친구, 사회의 시선이 앞섭니다.",
+    value: "39.1%",
+    desc: "번아웃의 가장 큰 원인은 '진로 불안'입니다.",
+    source: "국무조정실 『2024 청년의 삶 실태조사』",
   },
   {
-    icon: Coins,
-    title: "돈과 안정만 기준이 됩니다.",
-    desc: "적성과 소명보다 조건이 먼저가 됩니다.",
+    value: "60%",
+    desc: "신입사원 10명 중 6명이 입사 1~3년 내 조기 퇴사를 경험합니다.",
+    source: "인크루트 2025년 5월 조사",
   },
   {
-    icon: Compass,
-    title: "정보는 넘치는데 더 혼란스럽습니다.",
-    desc: "직업은 많은데 나에게 맞는 길은 안 보입니다.",
+    value: "58.9%",
+    desc: "조기 퇴사의 주된 이유는 '직무 불일치'였습니다.",
+    source: "인크루트 2025",
   },
   {
-    icon: Search,
-    title: "하나님의 뜻을 알고 싶지만 막막합니다.",
-    desc: "신앙과 진로를 연결하는 구체적 방법이 없습니다.",
+    value: "45%",
+    desc: "청년 10명 중 4~5명이 AI로 인해 취업 가능성이 낮아진다고 느낍니다.",
+    source: "매일신문 2025.06",
   },
 ];
 
@@ -61,9 +59,9 @@ export default function Empathy() {
         </motion.div>
 
         <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {points.map(({ icon: Icon, title, desc }, i) => (
+          {stats.map(({ value, desc, source }, i) => (
             <motion.div
-              key={title}
+              key={value + desc}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.6 }}
@@ -73,15 +71,15 @@ export default function Empathy() {
                 delay: i * 0.08,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="flex flex-col items-center gap-4 rounded-2xl bg-white px-6 py-8 text-center shadow-sm"
+              className="flex flex-col items-center gap-3 rounded-2xl bg-white px-5 py-8 text-center shadow-sm"
             >
-              <Icon className="size-7 text-accent-blue" strokeWidth={1.75} />
-              <div className="flex flex-col gap-1.5">
-                <p className="text-sm font-semibold leading-6 text-navy">
-                  {title}
-                </p>
-                <p className="text-xs leading-5 text-navy/55">{desc}</p>
-              </div>
+              <span className="text-4xl font-bold tracking-tight text-accent-blue">
+                {value}
+              </span>
+              <p className="text-xs font-medium leading-5 text-navy/80">
+                {desc}
+              </p>
+              <span className="text-[11px] text-navy/40">출처 · {source}</span>
             </motion.div>
           ))}
         </div>
@@ -95,7 +93,8 @@ export default function Empathy() {
           className="flex flex-col items-center gap-3 text-center"
         >
           <p className="max-w-xl text-lg font-semibold leading-8 text-navy">
-            진로는 더 많이 고민한다고 답이 나오는 문제가 아닙니다.
+            이 숫자는 당신만의 문제가 아니라, 자기이해 없이 시작한 진로가
+            만드는 세대 전체의 문제입니다.
             <br className="hidden sm:block" />
             먼저 하나님이 지으신 &lsquo;나&rsquo;를 이해하는 것에서
             시작해야 합니다.
