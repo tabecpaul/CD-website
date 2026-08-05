@@ -12,13 +12,40 @@ const fadeUp = {
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [marketingAgreed, setMarketingAgreed] = useState(false);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!privacyAgreed) return;
-    setSubmitted(true);
+    if (!privacyAgreed || submitting) return;
+
+    const formData = new FormData(e.currentTarget);
+    setError(null);
+    setSubmitting(true);
+
+    try {
+      const res = await fetch("/api/consultation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          phone: formData.get("phone"),
+          timeSlot: formData.get("timeSlot"),
+          privacyAgreed,
+          marketingAgreed,
+        }),
+      });
+
+      if (!res.ok) throw new Error("submit failed");
+      setSubmitted(true);
+    } catch {
+      setError("신청 접수에 실패했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -171,12 +198,16 @@ export default function ContactForm() {
                 </label>
               </div>
 
+              {error ? (
+                <p className="text-xs text-red-500">{error}</p>
+              ) : null}
+
               <button
                 type="submit"
-                disabled={!privacyAgreed}
+                disabled={!privacyAgreed || submitting}
                 className="mt-2 flex h-12 items-center justify-center rounded-full bg-gold text-sm font-semibold text-cream transition-colors hover:bg-gold/90 disabled:cursor-not-allowed disabled:bg-navy/20 disabled:text-navy/40 disabled:hover:bg-navy/20"
               >
-                무료 진로 상담 신청
+                {submitting ? "접수 중..." : "무료 진로 상담 신청"}
               </button>
             </form>
           )}

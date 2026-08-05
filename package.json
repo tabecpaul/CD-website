@@ -2,7 +2,8 @@
   "name": "newland",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "dev:www": "npm run dev --workspace=www",
