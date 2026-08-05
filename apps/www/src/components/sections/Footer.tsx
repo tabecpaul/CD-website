@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Phone, Mail } from "lucide-react";
 
 export default function Footer() {
@@ -41,9 +42,26 @@ export default function Footer() {
 
         <div className="h-px w-full bg-cream/10" />
 
-        <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
+        <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left">
           <span className="text-xs font-bold tracking-[0.2em] text-gold">
             DISCOVER · GUIDE · LIVE BY DESIGN
+          </span>
+          <div className="flex items-center gap-4 text-xs text-cream/60">
+            <Link href="/terms" className="hover:text-cream">
+              이용약관
+            </Link>
+            <Link href="/privacy" className="hover:text-cream">
+              개인정보처리방침
+            </Link>
+            <Link href="/refund-policy" className="hover:text-cream">
+              결제 및 환불정책
+            </Link>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-1 text-center sm:items-start sm:text-left">
+          <span className="text-xs text-cream/40">
+            Career Direct Korea · 대표 박정열 · 사업자등록번호 128-26-97778
           </span>
           <span className="text-xs text-cream/40">
             © 2026 Career Direct Korea. All rights reserved.

@@ -12,9 +12,12 @@ const fadeUp = {
 
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [marketingAgreed, setMarketingAgreed] = useState(false);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!privacyAgreed) return;
     setSubmitted(true);
   }
 
@@ -76,6 +79,23 @@ export default function ContactForm() {
 
               <div className="flex flex-col gap-1.5">
                 <label
+                  htmlFor="email"
+                  className="text-xs font-semibold text-navy/70"
+                >
+                  이메일
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="example@email.com"
+                  className="h-11 rounded-xl border border-navy/15 bg-cream px-4 text-sm text-navy placeholder:text-navy/30 focus:border-gold focus:outline-none"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label
                   htmlFor="phone"
                   className="text-xs font-semibold text-navy/70"
                 >
@@ -116,9 +136,45 @@ export default function ContactForm() {
                 </select>
               </div>
 
+              <div className="flex flex-col gap-3 border-t border-navy/10 pt-4">
+                <label className="flex items-start gap-2.5 text-xs leading-5 text-navy/70">
+                  <input
+                    type="checkbox"
+                    name="privacyAgreed"
+                    required
+                    checked={privacyAgreed}
+                    onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-navy/30 text-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
+                  />
+                  <span>
+                    <span className="font-semibold text-navy">
+                      (필수)
+                    </span>{" "}
+                    개인정보 수집 및 이용에 동의합니다.
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-2.5 text-xs leading-5 text-navy/70">
+                  <input
+                    type="checkbox"
+                    name="marketingAgreed"
+                    checked={marketingAgreed}
+                    onChange={(e) => setMarketingAgreed(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-navy/30 text-gold focus:outline-none focus:ring-2 focus:ring-gold/40"
+                  />
+                  <span>
+                    <span className="font-semibold text-navy">
+                      (선택)
+                    </span>{" "}
+                    마케팅 정보 수신에 동의합니다.
+                  </span>
+                </label>
+              </div>
+
               <button
                 type="submit"
-                className="mt-2 flex h-12 items-center justify-center rounded-full bg-gold text-sm font-semibold text-cream transition-colors hover:bg-gold/90"
+                disabled={!privacyAgreed}
+                className="mt-2 flex h-12 items-center justify-center rounded-full bg-gold text-sm font-semibold text-cream transition-colors hover:bg-gold/90 disabled:cursor-not-allowed disabled:bg-navy/20 disabled:text-navy/40 disabled:hover:bg-navy/20"
               >
                 무료 진로 상담 신청
               </button>

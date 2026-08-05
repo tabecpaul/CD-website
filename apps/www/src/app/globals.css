@@ -20,3 +20,69 @@ body {
   word-break: keep-all;
   overflow-wrap: break-word;
 }
+
+.legal-prose h2 {
+  margin-top: 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+.legal-prose h2:first-child {
+  margin-top: 0;
+}
+
+.legal-prose p {
+  margin-top: 0.75rem;
+}
+
+.legal-prose ul,
+.legal-prose ol {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.legal-prose ul {
+  list-style: disc;
+}
+
+.legal-prose ol {
+  list-style: decimal;
+}
+
+.legal-prose table {
+  margin-top: 0.75rem;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.legal-prose th,
+.legal-prose td {
+  border: 1px solid color-mix(in srgb, var(--color-navy) 15%, transparent);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.legal-prose th {
+  background: color-mix(in srgb, var(--color-gray) 25%, transparent);
+}
+
+.legal-prose a {
+  color: var(--color-teal);
+  text-underline-offset: 2px;
+}
+
+.legal-prose .legal-note {
+  margin-top: 0;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-gold) 40%, transparent);
+  background: color-mix(in srgb, var(--color-gold) 10%, transparent);
+  padding: 0.875rem 1rem;
+  font-size: 0.8125rem;
+  color: var(--color-navy);
+}

@@ -1,0 +1,202 @@
+import type { Metadata } from "next";
+import PageHeader from "@/components/PageHeader";
+import LegalDocument from "@/components/LegalDocument";
+import Footer from "@/components/sections/Footer";
+
+export const metadata: Metadata = {
+  title: "개인정보처리방침 | Career Direct Korea",
+};
+
+export default function PrivacyPage() {
+  return (
+    <>
+      <main className="flex flex-1 flex-col bg-cream">
+        <PageHeader />
+        <LegalDocument title="개인정보처리방침" effectiveDate="2026년 8월 5일">
+          <p className="legal-note">
+            대괄호([ ])로 표시된 항목은 결제대행사(PG사) 상호 확정 후
+            업데이트가 필요합니다.
+          </p>
+
+          <h2>1. 개인정보의 처리 목적</h2>
+          <p>
+            Career Direct Korea(이하 &ldquo;회사&rdquo;)는 다음의 목적을
+            위하여 개인정보를 처리하며, 처리하는 개인정보는 다음의 목적
+            이외의 용도로는 사용되지 않습니다.
+          </p>
+          <ul>
+            <li>무료 진로 상담 신청 접수 및 상담 일정 안내</li>
+            <li>Career Direct 진단 및 컨설팅 서비스 제공</li>
+            <li>결제 및 환불 처리</li>
+            <li>서비스 이용 관련 공지사항 전달, 불만 처리 등 민원 처리</li>
+            <li>마케팅 및 광고에의 활용(수신에 동의한 이용자에 한함)</li>
+          </ul>
+
+          <h2>2. 개인정보의 처리 및 보유기간</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>항목</th>
+                <th>보유기간</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>무료 상담 신청 정보</td>
+                <td>상담 완료 후 3년 (또는 동의 철회 시까지)</td>
+              </tr>
+              <tr>
+                <td>결제 정보</td>
+                <td>전자상거래 등에서의 소비자보호에 관한 법률에 따라 5년</td>
+              </tr>
+              <tr>
+                <td>계약 또는 청약철회 등에 관한 기록</td>
+                <td>5년</td>
+              </tr>
+              <tr>
+                <td>소비자의 불만 또는 분쟁처리에 관한 기록</td>
+                <td>3년</td>
+              </tr>
+              <tr>
+                <td>마케팅 수신동의</td>
+                <td>동의 철회 시까지</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2>3. 개인정보의 제3자 제공</h2>
+          <p>
+            회사는 정보주체의 개인정보를 제1항에서 명시한 범위 내에서만
+            처리하며, 정보주체의 동의, 법률의 특별한 규정 등 개인정보
+            보호법 제17조 및 제18조에 해당하는 경우에만 개인정보를
+            제3자에게 제공합니다.
+          </p>
+
+          <h2>4. 개인정보처리의 위탁</h2>
+          <p>
+            회사는 원활한 서비스 제공을 위하여 다음과 같이 개인정보 처리업무를
+            위탁하고 있습니다.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>수탁업체</th>
+                <th>위탁업무 내용</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Supabase (Supabase Inc.)</td>
+                <td>상담 신청 정보 및 동의 이력 데이터베이스 보관</td>
+              </tr>
+              <tr>
+                <td>Amazon Web Services (AWS SES)</td>
+                <td>이메일 발송</td>
+              </tr>
+              <tr>
+                <td>[신용카드 PG사명]</td>
+                <td>신용카드 결제 처리</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            회사는 위탁계약 체결 시 개인정보 보호법 제26조에 따라
+            위탁업무 수행목적 외 개인정보 처리금지, 기술적·관리적 보호조치,
+            재위탁 제한, 수탁자에 대한 관리·감독 등을 계약서 등 문서에
+            명시하고 있습니다.
+          </p>
+
+          <h2>5. 정보주체의 권리·의무 및 행사방법</h2>
+          <p>
+            정보주체는 회사에 대해 언제든지 개인정보 열람·정정·삭제·처리정지
+            요구 등의 권리를 행사할 수 있습니다. 권리 행사는 서면, 이메일(
+            <a href="mailto:dulospaul@gmail.com">dulospaul@gmail.com</a>) 등을
+            통하여 하실 수 있으며 회사는 이에 대해 지체 없이 조치하겠습니다.
+          </p>
+
+          <h2>6. 처리하는 개인정보 항목</h2>
+          <ul>
+            <li>필수항목: 이름, 이메일, 전화번호</li>
+            <li>선택항목: 마케팅 수신 동의 여부</li>
+            <li>
+              결제 시 추가 수집 항목: 결제수단 정보(카드번호 전체는 저장하지
+              않으며 결제대행사를 통해 처리됩니다)
+            </li>
+          </ul>
+
+          <h2>7. 개인정보의 파기</h2>
+          <p>
+            회사는 개인정보 보유기간의 경과, 처리목적 달성 등 개인정보가
+            불필요하게 되었을 때에는 지체 없이 해당 개인정보를 파기합니다.
+            전자적 파일 형태의 정보는 기록을 재생할 수 없는 기술적 방법을
+            사용하여 삭제합니다.
+          </p>
+
+          <h2>8. 개인정보의 안전성 확보조치</h2>
+          <ul>
+            <li>개인정보 취급 담당자의 최소화 및 교육</li>
+            <li>개인정보에 대한 접근 제한</li>
+            <li>개인정보를 저장하는 데이터베이스 시스템에 대한 접근권한 관리</li>
+            <li>개인정보의 암호화(전송구간 암호화 등)</li>
+          </ul>
+
+          <h2>9. 개인정보 보호책임자</h2>
+          <table>
+            <tbody>
+              <tr>
+                <th>상호</th>
+                <td>Career Direct Korea (사업자등록번호 128-26-97778)</td>
+              </tr>
+              <tr>
+                <th>성명</th>
+                <td>박정열 (대표)</td>
+              </tr>
+              <tr>
+                <th>연락처</th>
+                <td>
+                  010-5231-1059 /{" "}
+                  <a href="mailto:dulospaul@gmail.com">
+                    dulospaul@gmail.com
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            정보주체께서는 회사의 서비스를 이용하시면서 발생한 모든
+            개인정보 보호 관련 문의, 불만처리, 피해구제 등을 개인정보
+            보호책임자에게 문의하실 수 있습니다.
+          </p>
+
+          <h2>10. 개인정보 처리방침의 변경</h2>
+          <p>
+            이 개인정보처리방침은 시행일로부터 적용되며, 법령 및 방침에
+            따른 변경내용의 추가, 삭제 및 정정이 있는 경우에는 변경사항의
+            시행 7일 전부터 공지사항을 통하여 고지할 것입니다.
+          </p>
+
+          <h2>11. 권익침해 구제방법</h2>
+          <p>
+            정보주체는 개인정보침해로 인한 구제를 받기 위하여
+            개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터
+            등에 분쟁해결이나 상담 등을 신청할 수 있습니다.
+          </p>
+          <ul>
+            <li>
+              개인정보분쟁조정위원회: (국번없이) 1833-6972
+              (www.kopico.go.kr)
+            </li>
+            <li>
+              개인정보침해신고센터: (국번없이) 118 (privacy.kisa.or.kr)
+            </li>
+            <li>
+              대검찰청 사이버범죄수사단: (국번없이) 1301 (www.spo.go.kr)
+            </li>
+            <li>경찰청 사이버수사국: (국번없이) 182 (ecrm.cyber.go.kr)</li>
+          </ul>
+        </LegalDocument>
+      </main>
+      <Footer />
+    </>
+  );
+}
