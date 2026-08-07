@@ -18,7 +18,7 @@
 ### 0.2 공급자 결정
 
 - 생성: `docs/decisions/lead-magnet-providers.md`
-- 결정: Supabase 프로젝트·리전, 이메일 공급자, n8n 운영 방식, 분석 도구, 공개 도메인
+- 결정: Supabase 프로젝트·리전, 이메일 공급자, 예약 실행 방식, 분석 도구, 공개 도메인
 - 완료 조건: 환경변수 이름, 웹훅 기능, 삭제 기능, 비용, 데이터 위치가 표로 확정됨
 - 검증: 개발·스테이징·운영 환경별 연결 책임자 확인
 
@@ -260,7 +260,7 @@
 - 완료 조건: 직접 URL 접근으로 PDF를 얻지 못함
 - 검증: 유효 토큰, 누락 토큰, 만료 토큰 화면
 
-## Phase 6. 이메일과 n8n
+## Phase 6. 이메일과 예약 자동화
 
 ### 6.1 이메일 콘텐츠 승인
 
@@ -272,21 +272,20 @@
 - 완료 조건: 각 코칭 메일은 질문 1개와 행동 1개만 포함
 - 검증: 모바일·다크모드 이메일 미리보기와 링크 검사
 
-### 6.2 Outbox 전달기
+### 6.2 Outbox 처리기
 
-- 생성: `apps/www/src/features/lead-magnet/server/publishOutbox.ts` 또는 선택한 인프라의 예약 작업
-- 책임: 미전달 이벤트를 n8n 웹훅으로 전달하고 성공·재시도 상태 기록
-- 완료 조건: DB 저장과 n8n 호출의 부분 실패를 복구 가능
-- 검증: timeout, 5xx, 중복 응답, 재시도 테스트
+- 생성: `supabase/functions/process-lead-magnet-outbox/index.ts`
+- 책임: 미처리 이벤트의 최신 동의와 중복 여부를 확인하고 AWS SES 발송 후 성공·재시도 상태 기록
+- 완료 조건: DB 저장과 SES 호출의 부분 실패를 복구 가능
+- 검증: timeout, SES 오류, 중복 실행, 재시도 테스트
 
-### 6.3 n8n 워크플로
+### 6.3 Supabase Cron 예약
 
-- 생성: `automation/n8n/lead-magnet-delivery.json`
-- 생성: `automation/n8n/lead-magnet-coaching-sequence.json`
-- 생성: `docs/runbooks/n8n-lead-magnet.md`
-- 책임: 즉시 자료 전달, 2·4·6일 예약, 발송 전 최신 동의 확인
+- 생성: `supabase/migrations/0003_lead_magnet_email_cron.sql`
+- 생성: `docs/runbooks/supabase-lead-magnet-email.md`
+- 책임: Outbox 처리 Edge Function을 주기적으로 호출해 즉시 자료 전달과 2·4·6일 예약을 실행
 - 완료 조건: 동일 리드·여정 버전의 중복 발송 없음
-- 검증: 시간 가속 테스트, 중도 수신 거부, 재동의, 공급자 장애
+- 검증: Cron 시간 가속 테스트, 중도 수신 거부, 재동의, SES 장애
 
 ### 6.4 이메일 웹훅
 

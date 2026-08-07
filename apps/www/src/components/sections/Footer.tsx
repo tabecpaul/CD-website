@@ -64,6 +64,9 @@ export default function Footer() {
             Career Direct Korea · 대표 박정열 · 사업자등록번호 128-26-97778
           </span>
           <span className="text-xs text-cream/40">
+            경기도 의왕시 오봉산단1로 12, 에이스비전 21 10층 1012호
+          </span>
+          <span className="text-xs text-cream/40">
             © 2026 Career Direct Korea. All rights reserved.
           </span>
         </div>
