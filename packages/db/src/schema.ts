@@ -1,6 +1,7 @@
 import {
   boolean,
   index,
+  integer,
   pgTable,
   serial,
   text,
@@ -35,6 +36,8 @@ export const leadMagnetLeads = pgTable(
     utmCampaign: varchar("utm_campaign", { length: 128 }),
     downloadToken: varchar("download_token", { length: 64 }).notNull(),
     downloadExpiresAt: timestamp("download_expires_at", { withTimezone: true }).notNull(),
+    unsubscribeToken: varchar("unsubscribe_token", { length: 64 }),
+    marketingUnsubscribedAt: timestamp("marketing_unsubscribed_at", { withTimezone: true }),
     lastRequestedAt: timestamp("last_requested_at", { withTimezone: true }).notNull().defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -42,6 +45,27 @@ export const leadMagnetLeads = pgTable(
   (table) => [
     uniqueIndex("lead_magnet_leads_email_unique").on(table.email),
     uniqueIndex("lead_magnet_leads_download_token_unique").on(table.downloadToken),
+    uniqueIndex("lead_magnet_leads_unsubscribe_token_unique").on(table.unsubscribeToken),
     index("lead_magnet_leads_created_at_idx").on(table.createdAt),
+  ],
+);
+
+export const leadMagnetEmailJobs = pgTable(
+  "lead_magnet_email_jobs",
+  {
+    id: serial("id").primaryKey(),
+    leadId: integer("lead_id").notNull().references(() => leadMagnetLeads.id, { onDelete: "cascade" }),
+    kind: varchar("kind", { length: 32 }).notNull(),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+    status: varchar("status", { length: 16 }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    lastErrorCode: varchar("last_error_code", { length: 80 }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("lead_magnet_email_jobs_lead_kind_unique").on(table.leadId, table.kind),
+    index("lead_magnet_email_jobs_due_idx").on(table.status, table.scheduledAt),
   ],
 );

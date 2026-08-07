@@ -15,6 +15,13 @@
       "when": 1786080735883,
       "tag": "0001_open_quasar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786087335442,
+      "tag": "0002_jittery_rachel_grey",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { leadMagnetLeads, db } from "@newland/db";
+import { processDueEmailJobs, replaceLeadEmailSchedule } from "@/features/lead-magnet/server/emailAutomation";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CONSENT_VERSION = "2026-08-07-v1";
@@ -32,21 +33,24 @@ export async function POST(request: Request) {
     }
 
     const token = randomBytes(24).toString("hex");
+    const unsubscribeToken = randomBytes(24).toString("hex");
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    await db
+    const coachingAgreed = body.coachingAgreed === true;
+    const [lead] = await db
       .insert(leadMagnetLeads)
       .values({
         email,
         privacyAgreed: true,
-        coachingAgreed: body.coachingAgreed === true,
+        coachingAgreed,
         consentVersion: CONSENT_VERSION,
         utmSource: clean(body.utmSource, 128),
         utmMedium: clean(body.utmMedium, 128),
         utmCampaign: clean(body.utmCampaign, 128),
         downloadToken: token,
         downloadExpiresAt: expiresAt,
+        unsubscribeToken,
         lastRequestedAt: now,
         updatedAt: now,
       })
@@ -54,17 +58,26 @@ export async function POST(request: Request) {
         target: leadMagnetLeads.email,
         set: {
           privacyAgreed: true,
-          coachingAgreed: body.coachingAgreed === true,
+          coachingAgreed,
           consentVersion: CONSENT_VERSION,
           utmSource: clean(body.utmSource, 128),
           utmMedium: clean(body.utmMedium, 128),
           utmCampaign: clean(body.utmCampaign, 128),
           downloadToken: token,
           downloadExpiresAt: expiresAt,
+          unsubscribeToken,
+          marketingUnsubscribedAt: coachingAgreed ? null : undefined,
           lastRequestedAt: now,
           updatedAt: now,
         },
-      });
+      })
+      .returning({ id: leadMagnetLeads.id });
+
+    await replaceLeadEmailSchedule(lead.id, coachingAgreed, now);
+
+    if (process.env.SES_FROM_EMAIL) {
+      await processDueEmailJobs(5);
+    }
 
     return Response.json({ ok: true, token }, { status: 201 });
   } catch (error) {
