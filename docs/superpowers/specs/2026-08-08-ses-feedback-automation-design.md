@@ -94,8 +94,9 @@ Configuration Set을 사용해 Career Direct Korea 애플리케이션의 이벤�
 1. 발송 전 리드의 `email_suppressed_at`을 확인한다.
 2. 억제된 리드는 해당 작업을 `skipped`로 바꾸고 SES를 호출하지 않는다.
 3. SES SendEmail 요청에 `ConfigurationSetName`을 포함한다.
-4. SES 응답의 `MessageId`를 해당 이메일 작업의 `provider_message_id`로 저장한다.
-5. Configuration Set 환경변수가 없으면 운영 오구성으로 처리하고 발송을 재시도 정책에 따른다.
+4. SES 이벤트 연결용 비식별 태그로 내부 `job_id`를 포함한다.
+5. SES 응답의 `MessageId`를 해당 이메일 작업의 `provider_message_id`로 저장한다.
+6. Configuration Set 환경변수가 없으면 운영 오구성으로 처리하고 발송을 재시도 정책에 따른다.
 
 ## 웹훅 보안
 

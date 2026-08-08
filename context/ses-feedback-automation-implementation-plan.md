@@ -96,6 +96,7 @@
 - 억제된 리드는 SES 호출 전에 작업을 `skipped` 처리한다.
 - `SES_CONFIGURATION_SET`을 필수 발송 구성으로 읽는다.
 - SendEmail 요청에 `ConfigurationSetName`을 전달한다.
+- 빠른 이벤트의 연결 경쟁 조건을 막기 위해 비식별 `job_id` 이메일 태그를 전달한다.
 - 응답 `MessageId`를 이메일 작업에 저장한다.
 
 검증:

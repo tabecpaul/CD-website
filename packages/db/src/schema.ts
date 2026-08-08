@@ -38,6 +38,9 @@ export const leadMagnetLeads = pgTable(
     downloadExpiresAt: timestamp("download_expires_at", { withTimezone: true }).notNull(),
     unsubscribeToken: varchar("unsubscribe_token", { length: 64 }),
     marketingUnsubscribedAt: timestamp("marketing_unsubscribed_at", { withTimezone: true }),
+    emailSuppressedAt: timestamp("email_suppressed_at", { withTimezone: true }),
+    emailSuppressionReason: varchar("email_suppression_reason", { length: 32 }),
+    transientBounceCount: integer("transient_bounce_count").notNull().default(0),
     lastRequestedAt: timestamp("last_requested_at", { withTimezone: true }).notNull().defaultNow(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -60,12 +63,37 @@ export const leadMagnetEmailJobs = pgTable(
     status: varchar("status", { length: 16 }).notNull().default("pending"),
     attempts: integer("attempts").notNull().default(0),
     lastErrorCode: varchar("last_error_code", { length: 80 }),
+    providerMessageId: varchar("provider_message_id", { length: 128 }),
     sentAt: timestamp("sent_at", { withTimezone: true }),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    bouncedAt: timestamp("bounced_at", { withTimezone: true }),
+    complainedAt: timestamp("complained_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     uniqueIndex("lead_magnet_email_jobs_lead_kind_unique").on(table.leadId, table.kind),
+    uniqueIndex("lead_magnet_email_jobs_provider_message_id_unique").on(table.providerMessageId),
     index("lead_magnet_email_jobs_due_idx").on(table.status, table.scheduledAt),
+  ],
+);
+
+export const leadMagnetEmailEvents = pgTable(
+  "lead_magnet_email_events",
+  {
+    id: serial("id").primaryKey(),
+    snsMessageId: varchar("sns_message_id", { length: 128 }).notNull(),
+    providerMessageId: varchar("provider_message_id", { length: 128 }),
+    jobId: integer("job_id").references(() => leadMagnetEmailJobs.id, { onDelete: "set null" }),
+    leadId: integer("lead_id").references(() => leadMagnetLeads.id, { onDelete: "set null" }),
+    eventType: varchar("event_type", { length: 32 }).notNull(),
+    eventSubtype: varchar("event_subtype", { length: 64 }),
+    eventAt: timestamp("event_at", { withTimezone: true }).notNull(),
+    processedAt: timestamp("processed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("lead_magnet_email_events_sns_message_id_unique").on(table.snsMessageId),
+    index("lead_magnet_email_events_provider_message_id_idx").on(table.providerMessageId),
+    index("lead_magnet_email_events_event_at_idx").on(table.eventAt),
   ],
 );

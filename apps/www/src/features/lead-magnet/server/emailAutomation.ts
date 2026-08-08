@@ -50,11 +50,12 @@ function htmlEscape(value: string) {
 
 function config() {
   const region = process.env.AWS_REGION ?? "ap-northeast-2";
-  const from = process.env.SES_FROM_EMAIL;
-  const replyTo = process.env.SES_REPLY_TO_EMAIL ?? from;
+  const from = process.env.SES_FROM_EMAIL?.trim();
+  const replyTo = process.env.SES_REPLY_TO_EMAIL?.trim() ?? from;
+  const configurationSet = process.env.SES_CONFIGURATION_SET?.trim();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.careerdirect.kr";
-  if (!from || !replyTo) throw new Error("SES_CONFIG_MISSING");
-  return { region, from, replyTo, siteUrl: siteUrl.replace(/\/$/, "") };
+  if (!from || !replyTo || !configurationSet) throw new Error("SES_CONFIG_MISSING");
+  return { region, from, replyTo, configurationSet, siteUrl: siteUrl.replace(/\/$/, "") };
 }
 
 export async function replaceLeadEmailSchedule(leadId: number, coachingAgreed: boolean, now = new Date()) {
@@ -66,7 +67,7 @@ export async function replaceLeadEmailSchedule(leadId: number, coachingAgreed: b
 }
 
 function buildMessage(kind: EmailKind, email: string, downloadToken: string, unsubscribeToken: string | null) {
-  const { region, from, replyTo, siteUrl } = config();
+  const { region, from, replyTo, configurationSet, siteUrl } = config();
   const item = content[kind];
   const coaching = kind !== "delivery";
   const actionUrl = kind === "delivery"
@@ -106,6 +107,7 @@ function buildMessage(kind: EmailKind, email: string, downloadToken: string, uns
     region,
     from,
     replyTo,
+    configurationSet,
     recipient: email,
     raw: Buffer.from(headers.join("\r\n")),
   };
@@ -124,20 +126,29 @@ export async function processDueEmailJobs(limit = 20) {
     if (!claimed.length) continue;
     const lead = await db.query.leadMagnetLeads.findFirst({ where: eq(leadMagnetLeads.id, job.leadId) });
     const kind = job.kind as EmailKind;
-    if (!lead || (kind !== "delivery" && (!lead.coachingAgreed || lead.marketingUnsubscribedAt))) {
+    if (!lead || lead.emailSuppressedAt || (kind !== "delivery" && (!lead.coachingAgreed || lead.marketingUnsubscribedAt))) {
       await db.update(leadMagnetEmailJobs).set({ status: "skipped", updatedAt: new Date() }).where(eq(leadMagnetEmailJobs.id, job.id));
       summary.skipped++;
       continue;
     }
     try {
       const message = buildMessage(kind, lead.email, lead.downloadToken, lead.unsubscribeToken);
-      await new SESv2Client({ region: message.region }).send(new SendEmailCommand({
+      const response = await new SESv2Client({ region: message.region }).send(new SendEmailCommand({
         FromEmailAddress: message.from,
         Destination: { ToAddresses: [message.recipient] },
         ReplyToAddresses: [message.replyTo],
+        ConfigurationSetName: message.configurationSet,
+        EmailTags: [{ Name: "job_id", Value: String(job.id) }],
         Content: { Raw: { Data: message.raw } },
       }));
-      await db.update(leadMagnetEmailJobs).set({ status: "sent", sentAt: new Date(), updatedAt: new Date(), lastErrorCode: null }).where(eq(leadMagnetEmailJobs.id, job.id));
+      if (!response.MessageId) throw new Error("SES_MESSAGE_ID_MISSING");
+      await db.update(leadMagnetEmailJobs).set({
+        status: "sent",
+        sentAt: new Date(),
+        providerMessageId: response.MessageId,
+        updatedAt: new Date(),
+        lastErrorCode: null,
+      }).where(eq(leadMagnetEmailJobs.id, job.id));
       summary.sent++;
     } catch (error) {
       const attempts = job.attempts + 1;
