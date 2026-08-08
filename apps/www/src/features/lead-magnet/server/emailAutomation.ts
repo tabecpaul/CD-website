@@ -66,7 +66,7 @@ export async function replaceLeadEmailSchedule(leadId: number, coachingAgreed: b
 }
 
 function buildMessage(kind: EmailKind, email: string, downloadToken: string, unsubscribeToken: string | null) {
-  const { from, replyTo, siteUrl } = config();
+  const { region, from, replyTo, siteUrl } = config();
   const item = content[kind];
   const coaching = kind !== "delivery";
   const actionUrl = kind === "delivery"
@@ -102,7 +102,13 @@ function buildMessage(kind: EmailKind, email: string, downloadToken: string, uns
     html,
     "--career-direct-boundary--",
   ];
-  return { region: config().region, raw: Buffer.from(headers.join("\r\n")) };
+  return {
+    region,
+    from,
+    replyTo,
+    recipient: email,
+    raw: Buffer.from(headers.join("\r\n")),
+  };
 }
 
 export async function processDueEmailJobs(limit = 20) {
@@ -125,12 +131,27 @@ export async function processDueEmailJobs(limit = 20) {
     }
     try {
       const message = buildMessage(kind, lead.email, lead.downloadToken, lead.unsubscribeToken);
-      await new SESv2Client({ region: message.region }).send(new SendEmailCommand({ Content: { Raw: { Data: message.raw } } }));
+      await new SESv2Client({ region: message.region }).send(new SendEmailCommand({
+        FromEmailAddress: message.from,
+        Destination: { ToAddresses: [message.recipient] },
+        ReplyToAddresses: [message.replyTo],
+        Content: { Raw: { Data: message.raw } },
+      }));
       await db.update(leadMagnetEmailJobs).set({ status: "sent", sentAt: new Date(), updatedAt: new Date(), lastErrorCode: null }).where(eq(leadMagnetEmailJobs.id, job.id));
       summary.sent++;
     } catch (error) {
       const attempts = job.attempts + 1;
       const code = error instanceof Error ? error.name.slice(0, 80) : "UNKNOWN";
+      const metadata = error && typeof error === "object" && "$metadata" in error
+        ? (error.$metadata as { httpStatusCode?: number })
+        : undefined;
+      console.error("Lead magnet email send failed", {
+        jobId: job.id,
+        kind,
+        errorName: error instanceof Error ? error.name : "UNKNOWN",
+        errorMessage: error instanceof Error ? error.message : "Unknown email send error",
+        httpStatusCode: metadata?.httpStatusCode,
+      });
       await db.update(leadMagnetEmailJobs).set({ status: attempts >= 5 ? "failed" : "pending", attempts, lastErrorCode: code, updatedAt: new Date() }).where(eq(leadMagnetEmailJobs.id, job.id));
       summary.failed++;
     }
