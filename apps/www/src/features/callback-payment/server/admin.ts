@@ -37,6 +37,7 @@ export async function createPaymentInstruction(callbackRequestId: number, produc
   }).returning();
   const result = await sendPaymentInstructionEmail({ name: callback.name, email: callback.email, productName: product.name, supplyAmount: product.supplyAmount, vatAmount: product.vatAmount, totalAmount: product.totalAmount, dueAt });
   await db.update(assessmentCallbackPayments).set({ instructionEmailStatus: result.ok ? "sent" : "failed", instructionEmailId: result.ok ? result.providerMessageId : null, instructionEmailError: result.ok ? null : result.errorCode, instructionEmailSentAt: result.ok ? new Date() : null, updatedAt: new Date() }).where(eq(assessmentCallbackPayments.id, payment.id));
+  await db.update(assessmentCallbackRequests).set({ status: "payment_sent", statusUpdatedAt: new Date(), updatedAt: new Date() }).where(eq(assessmentCallbackRequests.id, callbackRequestId));
   if (result.ok) await recordAnalyticsEventSafely({ eventName: "payment_instruction_sent", productCode: product.code, utm: callback });
   return { payment, email: result };
 }
@@ -59,6 +60,7 @@ export async function confirmPayment(callbackRequestId: number) {
   await db.update(assessmentCallbackPayments).set({ paymentStatus: "paid", paidAt: now, updatedAt: now }).where(and(eq(assessmentCallbackPayments.id, payment.id), eq(assessmentCallbackPayments.paymentStatus, "awaiting_payment")));
   const result = await sendPaymentConfirmedEmail({ name: callback.name, email: callback.email, productName: payment.productName, totalAmount: payment.totalAmount });
   await db.update(assessmentCallbackPayments).set({ confirmationEmailStatus: result.ok ? "sent" : "failed", confirmationEmailId: result.ok ? result.providerMessageId : null, confirmationEmailError: result.ok ? null : result.errorCode, confirmationEmailSentAt: result.ok ? new Date() : null, updatedAt: new Date() }).where(eq(assessmentCallbackPayments.id, payment.id));
+  await db.update(assessmentCallbackRequests).set({ status: "paid", statusUpdatedAt: now, updatedAt: now }).where(eq(assessmentCallbackRequests.id, callbackRequestId));
   await recordAnalyticsEventSafely({ eventName: "payment_confirmed", productCode: payment.productCode, utm: callback });
   return result;
 }
@@ -101,6 +103,8 @@ export async function updateService(callbackRequestId: number, input: Record<str
     timestamps.consultationEndAt = new Date(start.getTime() + 3 * 60 * 60 * 1000);
   }
   await db.update(assessmentCallbackPayments).set({ serviceStatus: next, ...timestamps, consultationChangeCount: next === "consultation_scheduled" && payment.consultationStartAt ? payment.consultationChangeCount + 1 : payment.consultationChangeCount, updatedAt: now }).where(eq(assessmentCallbackPayments.id, payment.id));
+  const callbackStatus = next === "consultation_completed" ? "consulting_completed" : next === "not_issued" ? "paid" : "assessment_in_progress";
+  await db.update(assessmentCallbackRequests).set({ status: callbackStatus, statusUpdatedAt: now, updatedAt: now }).where(eq(assessmentCallbackRequests.id, callbackRequestId));
   const eventName = next === "link_issued" ? "assessment_link_issued" : next === "registered" ? "assessment_registered" : next === "assessment_completed" ? "assessment_completed" : next === "consultation_completed" ? "consultation_completed" : null;
   if (eventName) {
     const callback = await db.query.assessmentCallbackRequests.findFirst({ where: eq(assessmentCallbackRequests.id, callbackRequestId) });
@@ -133,6 +137,7 @@ export async function processRefund(callbackRequestId: number, input: Record<str
     await db.update(assessmentCallbackPayments).set({ paymentStatus: "refunded", isActive: false, refundCompletedAt: now, updatedAt: now }).where(eq(assessmentCallbackPayments.id, payment.id));
     const email = await sendRefundEmail({ name: callback.name, email: callback.email, amount: payment.refundFinalAmount, completed: true });
     await db.update(assessmentCallbackPayments).set({ refundCompletedEmailStatus: email.ok ? "sent" : "failed", refundCompletedEmailId: email.ok ? email.providerMessageId : null, refundCompletedEmailError: email.ok ? null : email.errorCode, refundCompletedEmailSentAt: email.ok ? new Date() : null }).where(eq(assessmentCallbackPayments.id, payment.id));
+    await db.update(assessmentCallbackRequests).set({ status: "on_hold", statusUpdatedAt: now, updatedAt: now }).where(eq(assessmentCallbackRequests.id, callbackRequestId));
     await recordAnalyticsEventSafely({ eventName: "payment_refunded", productCode: payment.productCode, utm: callback });
     return { completed: true };
   }
