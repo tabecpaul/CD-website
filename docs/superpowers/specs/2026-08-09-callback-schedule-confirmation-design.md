@@ -54,8 +54,6 @@
 - `reschedule_preferred_date` date, nullable
 - `reschedule_time_slot` varchar, nullable
 - `reschedule_message` varchar(500), nullable
-- `reschedule_token_hash` varchar, nullable
-- `reschedule_token_expires_at` timestamptz, nullable
 
 24시간 전 알림은 새 `callback_schedule_email_jobs` 테이블로 관리한다.
 
@@ -68,6 +66,15 @@
 - 발송·생성·수정 시각
 
 `요청 ID + 일정 버전 + 작업 종류`에 고유 제약을 두어 크론이 반복 실행돼도 같은 알림이 중복 생성되거나 발송되지 않게 한다. 테이블은 RLS를 활성화하고 공개 Supabase 정책을 만들지 않는다.
+
+고객 링크에는 새 `callback_schedule_tokens` 테이블을 사용한다.
+
+- 요청 ID와 일정 버전
+- 무작위 토큰의 SHA-256 해시
+- 만료 시각과 폐기 시각
+- 생성 시각
+
+확정·재발송·24시간 알림마다 새 토큰을 발급할 수 있으며, 같은 현재 일정 버전의 기존 토큰도 만료 전까지 유효하다. 재확정·완료·취소 시 이전 버전 또는 해당 요청의 활성 토큰을 모두 폐기한다. 따라서 토큰 원문을 DB에 저장하지 않으면서 이전에 받은 정상 이메일 링크를 불필요하게 무효화하지 않는다.
 
 ## 5. 관리자 CRM
 
