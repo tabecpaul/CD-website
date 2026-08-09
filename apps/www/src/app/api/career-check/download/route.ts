@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { eq } from "drizzle-orm";
 import { leadMagnetLeads, db } from "@newland/db";
+import { recordAnalyticsEventSafely, visitorIdFromRequest } from "@/features/analytics/server/events";
 
 export async function GET(request: Request) {
   const token = new URL(request.url).searchParams.get("token");
@@ -12,7 +13,7 @@ export async function GET(request: Request) {
 
   const lead = await db.query.leadMagnetLeads.findFirst({
     where: eq(leadMagnetLeads.downloadToken, token),
-    columns: { downloadExpiresAt: true },
+    columns: { downloadExpiresAt: true, utmSource: true, utmMedium: true, utmCampaign: true },
   });
 
   if (!lead || lead.downloadExpiresAt.getTime() < Date.now()) {
@@ -27,6 +28,13 @@ export async function GET(request: Request) {
     "career-direction-check-ko-v1.0.pdf",
   );
   const pdf = await readFile(pdfPath);
+
+  await recordAnalyticsEventSafely({
+    eventName: "pdf_downloaded",
+    anonymousId: visitorIdFromRequest(request),
+    path: "/api/career-check/download",
+    utm: lead,
+  });
 
   return new Response(pdf, {
     headers: {

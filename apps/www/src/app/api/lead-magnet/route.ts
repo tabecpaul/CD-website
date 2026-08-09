@@ -1,9 +1,10 @@
 import { randomBytes } from "node:crypto";
 import { leadMagnetLeads, db } from "@newland/db";
 import { processDueEmailJobs, replaceLeadEmailSchedule } from "@/features/lead-magnet/server/emailAutomation";
+import { recordAnalyticsEventSafely, visitorIdFromRequest } from "@/features/analytics/server/events";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const CONSENT_VERSION = "2026-08-07-v1";
+const CONSENT_VERSION = "2026-08-09-v2";
 
 function clean(value: unknown, max: number) {
   return typeof value === "string" ? value.trim().slice(0, max) : null;
@@ -74,6 +75,17 @@ export async function POST(request: Request) {
       .returning({ id: leadMagnetLeads.id });
 
     await replaceLeadEmailSchedule(lead.id, coachingAgreed, now);
+
+    await recordAnalyticsEventSafely({
+      eventName: "lead_submitted",
+      anonymousId: visitorIdFromRequest(request),
+      path: "/career-check",
+      utm: {
+        utmSource: clean(body.utmSource, 128),
+        utmMedium: clean(body.utmMedium, 128),
+        utmCampaign: clean(body.utmCampaign, 128),
+      },
+    });
 
     if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
       await processDueEmailJobs(5);

@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import Footer from "@/components/sections/Footer";
 import LeadCaptureForm from "./LeadCaptureForm";
+import PageViewTracker from "@/features/analytics/components/PageViewTracker";
+import TrackedExternalLink from "@/features/analytics/components/TrackedExternalLink";
 
 const signals = [
   "열심히 일해도 이 길이 맞는지 확신이 없다",
@@ -48,6 +50,7 @@ export default function CareerCheckLanding() {
   return (
     <>
       <main className="overflow-hidden bg-cream">
+        <PageViewTracker />
         <section className="relative px-5 pb-20 pt-6 sm:px-8 lg:pb-28">
           <div className="absolute inset-x-0 top-0 h-[36rem] bg-[radial-gradient(circle_at_75%_10%,rgba(79,158,169,.18),transparent_38%),linear-gradient(to_bottom,rgba(255,255,255,.72),transparent)]" aria-hidden />
           <nav className="relative mx-auto flex max-w-6xl items-center justify-between">
@@ -139,7 +142,7 @@ export default function CareerCheckLanding() {
               <div className="mt-6 grid grid-cols-2 gap-5 sm:grid-cols-5">
                 {["30년+ 개발·개선", "84개국", "21개 언어", "40만+ 삶에 영향", "800+ 컨설턴트"].map((fact) => <p key={fact} className="text-sm font-bold text-white/75">{fact}</p>)}
               </div>
-              <a href="https://www.careerdirect.org/" target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 text-xs font-bold text-teal hover:text-white">Career Direct 공식 출처 <ArrowRight className="size-3.5" /></a>
+              <TrackedExternalLink ctaLocation="fast_facts" href="https://www.careerdirect.org/" target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 text-xs font-bold text-teal hover:text-white">Career Direct 공식 출처 <ArrowRight className="size-3.5" /></TrackedExternalLink>
             </div>
           </div>
         </section>
@@ -167,7 +170,7 @@ export default function CareerCheckLanding() {
 
         <section className="relative bg-[#e9f4f4] px-5 py-20 sm:px-8 lg:py-28">
           <div className="mx-auto grid max-w-5xl items-center gap-10 lg:grid-cols-[1fr_.9fr]">
-            <div><p className="text-sm font-black tracking-[.18em] text-teal">YOUR NEXT QUESTION</p><h2 className="mt-4 text-3xl font-black leading-tight tracking-tight text-navy sm:text-5xl">오늘 결론을 내리지 않아도<br />방향은 점검할 수 있습니다.</h2><p className="mt-6 max-w-xl text-lg leading-8 text-navy/65">이메일 한 번으로 워크북을 받고, 지금 가장 어긋난 나침반과 다음 30일의 작은 행동을 찾아보세요.</p><a href="https://www.careerdirect.org/" target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-teal hover:text-navy">Career Direct 온라인 평가 알아보기 <ArrowRight className="size-4" /></a></div>
+            <div><p className="text-sm font-black tracking-[.18em] text-teal">YOUR NEXT QUESTION</p><h2 className="mt-4 text-3xl font-black leading-tight tracking-tight text-navy sm:text-5xl">오늘 결론을 내리지 않아도<br />방향은 점검할 수 있습니다.</h2><p className="mt-6 max-w-xl text-lg leading-8 text-navy/65">이메일 한 번으로 워크북을 받고, 지금 가장 어긋난 나침반과 다음 30일의 작은 행동을 찾아보세요.</p><TrackedExternalLink ctaLocation="final_section" href="https://www.careerdirect.org/" target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-teal hover:text-navy">Career Direct 온라인 평가 알아보기 <ArrowRight className="size-4" /></TrackedExternalLink></div>
             <LeadCaptureForm compact />
           </div>
         </section>

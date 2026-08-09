@@ -97,3 +97,26 @@ export const leadMagnetEmailEvents = pgTable(
     index("lead_magnet_email_events_event_at_idx").on(table.eventAt),
   ],
 );
+
+export const analyticsEvents = pgTable(
+  "analytics_events",
+  {
+    id: serial("id").primaryKey(),
+    eventId: varchar("event_id", { length: 36 }).notNull(),
+    anonymousId: varchar("anonymous_id", { length: 64 }),
+    eventName: varchar("event_name", { length: 40 }).notNull(),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).notNull(),
+    path: varchar("path", { length: 160 }),
+    ctaLocation: varchar("cta_location", { length: 64 }),
+    utmSource: varchar("utm_source", { length: 128 }),
+    utmMedium: varchar("utm_medium", { length: 128 }),
+    utmCampaign: varchar("utm_campaign", { length: 128 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("analytics_events_event_id_unique").on(table.eventId),
+    index("analytics_events_name_occurred_idx").on(table.eventName, table.occurredAt),
+    index("analytics_events_anonymous_occurred_idx").on(table.anonymousId, table.occurredAt),
+    index("analytics_events_utm_occurred_idx").on(table.utmSource, table.utmMedium, table.utmCampaign, table.occurredAt),
+  ],
+);

@@ -1,4 +1,5 @@
 import { consultationRequests, db } from "@newland/db";
+import { recordAnalyticsEventSafely, visitorIdFromRequest } from "@/features/analytics/server/events";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -18,6 +19,12 @@ export async function POST(request: Request) {
     phone,
     timeSlot,
     marketingAgreed: Boolean(marketingAgreed),
+  });
+
+  await recordAnalyticsEventSafely({
+    eventName: "consultation_submitted",
+    anonymousId: visitorIdFromRequest(request),
+    path: "/#contact",
   });
 
   return Response.json({ ok: true }, { status: 201 });
