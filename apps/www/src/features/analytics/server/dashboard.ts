@@ -28,6 +28,9 @@ function numeric<T extends Record<string, unknown>>(row: T) {
 
 export async function getAnalyticsDashboard(period: DashboardPeriod) {
   const start = kstStart(period);
+  // Raw postgres.js queries do not serialize Date instances in every runtime.
+  // Pass an ISO string and cast it explicitly so Vercel and local builds behave alike.
+  const startIso = start.toISOString();
   const [funnelResult, emailResult, unsubscribedResult, utmResult] = await Promise.all([
     db.execute(sql`
       select
@@ -36,17 +39,17 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where event_name = 'pdf_downloaded')::int as downloads,
         count(*) filter (where event_name = 'assessment_cta_clicked')::int as "ctaClicks",
         count(*) filter (where event_name = 'consultation_submitted')::int as consultations
-      from analytics_events where occurred_at >= ${start}
+      from analytics_events where occurred_at >= ${startIso}::timestamptz
     `),
     db.execute(sql`
       select
-        count(*) filter (where sent_at >= ${start})::int as sent,
-        count(*) filter (where delivered_at >= ${start})::int as delivered,
-        count(*) filter (where bounced_at >= ${start})::int as bounced,
-        count(*) filter (where complained_at >= ${start})::int as complained
+        count(*) filter (where sent_at >= ${startIso}::timestamptz)::int as sent,
+        count(*) filter (where delivered_at >= ${startIso}::timestamptz)::int as delivered,
+        count(*) filter (where bounced_at >= ${startIso}::timestamptz)::int as bounced,
+        count(*) filter (where complained_at >= ${startIso}::timestamptz)::int as complained
       from lead_magnet_email_jobs
     `),
-    db.execute(sql`select count(*)::int as unsubscribed from lead_magnet_leads where marketing_unsubscribed_at >= ${start}`),
+    db.execute(sql`select count(*)::int as unsubscribed from lead_magnet_leads where marketing_unsubscribed_at >= ${startIso}::timestamptz`),
     db.execute(sql`
       select
         coalesce(nullif(utm_source, ''), '(direct)') as "utmSource",
@@ -58,7 +61,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where event_name = 'assessment_cta_clicked')::int as "ctaClicks",
         count(*) filter (where event_name = 'consultation_submitted')::int as consultations
       from analytics_events
-      where occurred_at >= ${start}
+      where occurred_at >= ${startIso}::timestamptz
       group by 1, 2, 3
       order by leads desc, visitors desc
       limit 50
