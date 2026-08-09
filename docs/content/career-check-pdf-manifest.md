@@ -4,7 +4,7 @@
 - 승인일: 2026-08-07
 - 문서 버전: `career-direction-check-ko-v1.0`
 - 실제 제작일: 2026-08-07
-- 최종 PDF SHA-256: `498b58b58adaa699d90dc41a30c5db5573bd97bbc23cfb25ae34a4465a9d6b77`
+- 최종 PDF SHA-256: `16395360108590e284026ee1cdda9adb21798c38fb57f26e3b98025eafb70366`
 - 목표 산출물: `apps/www/private-assets/career-direction-check-ko-v1.pdf`
 - 검수 산출물: `output/pdf/career-direction-check-ko-v1.0.pdf`
 - 형식: A4 세로, 12페이지
@@ -310,7 +310,8 @@
 
 **주 CTA:** `Career Direct 온라인 평가 알아보기`
 
-- 링크 및 QR 목적지: `https://www.careerdirect.org/`
+- 링크 및 QR 경유 목적지: `https://start.careerdirect.kr/go/assessment?source=pdf_qr`
+- 최종 평가 목적지: `https://careerdirect.org/?language_code=KO`
 - 인쇄용 표기 URL: `www.careerdirect.org`
 
 **보조 CTA:** `컨설턴트 코칭 과정 알아보기`

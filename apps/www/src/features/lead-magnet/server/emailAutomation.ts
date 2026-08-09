@@ -85,7 +85,7 @@ function buildMessage(kind: EmailKind, email: string, downloadToken: string, uns
   const coaching = kind !== "delivery";
   const actionUrl = kind === "delivery"
     ? `${siteUrl}/api/career-check/download?token=${downloadToken}`
-    : kind === "coaching-3" ? "https://www.careerdirect.org/" : `${siteUrl}/career-check`;
+    : kind === "coaching-3" ? "https://careerdirect.org/?language_code=KO" : `${siteUrl}/career-check`;
   const unsubscribeUrl = unsubscribeToken ? `${siteUrl}/unsubscribe?token=${unsubscribeToken}` : `${siteUrl}/privacy`;
   const oneClickUnsubscribeUrl = unsubscribeToken ? `${siteUrl}/api/unsubscribe?token=${unsubscribeToken}` : unsubscribeUrl;
   const action = item.action
