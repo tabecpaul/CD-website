@@ -52,6 +52,7 @@ export async function POST(request: Request) {
 
     const [created] = await db.insert(assessmentCallbackRequests).values({
       ...attributedInput,
+      anonymousId,
       consentVersion: CALLBACK_CONSENT_VERSION,
     }).returning({ id: assessmentCallbackRequests.id });
 

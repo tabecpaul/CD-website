@@ -46,7 +46,14 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where event_name = 'consultation_submitted')::int as consultations,
         count(*) filter (where event_name = 'callback_cta_clicked')::int as "callbackClicks",
         count(*) filter (where event_name = 'callback_submitted')::int as callbacks
-      from analytics_events where occurred_at >= ${startIso}::timestamptz
+      from analytics_events ae
+      where occurred_at >= ${startIso}::timestamptz
+        and not exists (
+          select 1 from assessment_callback_requests test_request
+          where test_request.is_test = true
+            and test_request.anonymous_id is not null
+            and test_request.anonymous_id = ae.anonymous_id
+        )
     `),
     db.execute(sql`
       select
@@ -69,8 +76,14 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where event_name = 'consultation_submitted')::int as consultations,
         count(*) filter (where event_name = 'callback_cta_clicked')::int as "callbackClicks",
         count(*) filter (where event_name = 'callback_submitted')::int as callbacks
-      from analytics_events
+      from analytics_events ae
       where occurred_at >= ${startIso}::timestamptz
+        and not exists (
+          select 1 from assessment_callback_requests test_request
+          where test_request.is_test = true
+            and test_request.anonymous_id is not null
+            and test_request.anonymous_id = ae.anonymous_id
+        )
       group by 1, 2, 3
       order by leads desc, visitors desc
       limit 50
@@ -80,7 +93,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where status = 'new')::int as "newRequests",
         count(*) filter (where status = 'callback_completed')::int as "callbackCompleted"
       from assessment_callback_requests
-      where created_at >= ${startIso}::timestamptz
+      where created_at >= ${startIso}::timestamptz and is_test = false
     `),
     db.execute(sql`
       select
@@ -92,7 +105,9 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where refund_completed_at >= ${startIso}::timestamptz)::int as refunded,
         coalesce(sum(total_amount) filter (where paid_at >= ${startIso}::timestamptz), 0)::int as "grossRevenue",
         coalesce(sum(refund_final_amount) filter (where refund_completed_at >= ${startIso}::timestamptz), 0)::int as "refundedAmount"
-      from assessment_callback_payments
+      from assessment_callback_payments payment
+      join assessment_callback_requests callback on callback.id = payment.callback_request_id
+      where callback.is_test = false
     `),
     db.execute(sql`
       select product_code as "productCode", product_name as "productName",
@@ -101,7 +116,9 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where consultation_completed_at >= ${startIso}::timestamptz)::int as "consultationCompleted",
         coalesce(sum(total_amount) filter (where paid_at >= ${startIso}::timestamptz), 0)::int as "grossRevenue",
         coalesce(sum(refund_final_amount) filter (where refund_completed_at >= ${startIso}::timestamptz), 0)::int as "refundedAmount"
-      from assessment_callback_payments
+      from assessment_callback_payments payment
+      join assessment_callback_requests callback on callback.id = payment.callback_request_id
+      where callback.is_test = false
       group by product_code, product_name order by paid desc
     `),
   ]);

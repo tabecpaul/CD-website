@@ -1,5 +1,6 @@
 import { desc, eq } from "drizzle-orm";
-import { assessmentCallbackRequests, db } from "@newland/db";
+import { assessmentCallbackRequests, callbackPaymentAuditLogs, db } from "@newland/db";
+import { auditValues } from "@/features/callback-payment/server/audit";
 import { callbackStatuses, type CallbackStatus } from "../domain";
 import { sendAdminCallbackEmail, sendCustomerCallbackEmail } from "./emails";
 
@@ -35,6 +36,21 @@ export async function updateCallbackRequest(id: number, input: { status: unknown
     updatedAt: now,
   }).where(eq(assessmentCallbackRequests.id, id)).returning();
   return updated;
+}
+
+export async function setCallbackTestStatus(id: number, input: { isTest: unknown; reason: unknown }) {
+  if (typeof input.isTest !== "boolean") throw new Error("CALLBACK_UPDATE_INVALID");
+  const isTest = input.isTest;
+  const reason = typeof input.reason === "string" ? input.reason.trim() : "";
+  if (reason.length > 500) throw new Error("CALLBACK_UPDATE_INVALID");
+  return db.transaction(async (tx) => {
+    const current = await tx.query.assessmentCallbackRequests.findFirst({ where: eq(assessmentCallbackRequests.id, id) });
+    if (!current) return null;
+    if (current.isTest === isTest) return current;
+    const [updated] = await tx.update(assessmentCallbackRequests).set({ isTest, updatedAt: new Date() }).where(eq(assessmentCallbackRequests.id, id)).returning();
+    await tx.insert(callbackPaymentAuditLogs).values(auditValues({ callbackRequestId: id, action: "test_status_changed", previousStatus: current.isTest ? "test" : "real", nextStatus: isTest ? "test" : "real", reason }));
+    return updated;
+  });
 }
 
 export async function resendCallbackEmail(id: number, audience: "admin" | "customer") {

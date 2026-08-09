@@ -147,6 +147,8 @@ export const assessmentCallbackRequests = pgTable(
     utmSource: varchar("utm_source", { length: 128 }),
     utmMedium: varchar("utm_medium", { length: 128 }),
     utmCampaign: varchar("utm_campaign", { length: 128 }),
+    anonymousId: varchar("anonymous_id", { length: 64 }),
+    isTest: boolean("is_test").notNull().default(false),
     status: varchar("status", { length: 32 }).notNull().default("new"),
     statusUpdatedAt: timestamp("status_updated_at", { withTimezone: true }).notNull().defaultNow(),
     adminNote: text("admin_note"),
@@ -177,6 +179,8 @@ export const assessmentCallbackRequests = pgTable(
     index("assessment_callback_preferred_idx").on(table.preferredDate, table.timeSlot),
     index("assessment_callback_email_created_idx").on(table.email, table.createdAt),
     index("assessment_callback_schedule_start_idx").on(table.scheduleStatus, table.confirmedStartAt),
+    index("assessment_callback_test_created_idx").on(table.isTest, table.createdAt),
+    index("assessment_callback_anonymous_created_idx").on(table.anonymousId, table.createdAt),
   ],
 );
 
@@ -283,5 +287,25 @@ export const assessmentCallbackPayments = pgTable(
     uniqueIndex("assessment_callback_payments_one_active_unique").on(table.callbackRequestId).where(sql`${table.isActive} = true`),
     index("assessment_callback_payments_due_idx").on(table.paymentStatus, table.paymentDueAt),
     index("assessment_callback_payments_service_idx").on(table.serviceStatus, table.updatedAt),
+  ],
+);
+
+export const callbackPaymentAuditLogs = pgTable(
+  "callback_payment_audit_logs",
+  {
+    id: serial("id").primaryKey(),
+    callbackRequestId: integer("callback_request_id").notNull().references(() => assessmentCallbackRequests.id, { onDelete: "cascade" }),
+    paymentId: integer("payment_id").references(() => assessmentCallbackPayments.id, { onDelete: "set null" }),
+    action: varchar("action", { length: 64 }).notNull(),
+    previousStatus: varchar("previous_status", { length: 64 }),
+    nextStatus: varchar("next_status", { length: 64 }),
+    amount: integer("amount"),
+    reason: varchar("reason", { length: 500 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("callback_payment_audit_callback_created_idx").on(table.callbackRequestId, table.createdAt),
+    index("callback_payment_audit_payment_created_idx").on(table.paymentId, table.createdAt),
+    index("callback_payment_audit_action_created_idx").on(table.action, table.createdAt),
   ],
 );
