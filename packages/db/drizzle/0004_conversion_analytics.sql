@@ -12,6 +12,8 @@ CREATE TABLE "analytics_events" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+ALTER TABLE "analytics_events" ENABLE ROW LEVEL SECURITY;
+--> statement-breakpoint
 CREATE UNIQUE INDEX "analytics_events_event_id_unique" ON "analytics_events" USING btree ("event_id");--> statement-breakpoint
 CREATE INDEX "analytics_events_name_occurred_idx" ON "analytics_events" USING btree ("event_name","occurred_at");--> statement-breakpoint
 CREATE INDEX "analytics_events_anonymous_occurred_idx" ON "analytics_events" USING btree ("anonymous_id","occurred_at");--> statement-breakpoint
