@@ -12,7 +12,7 @@ export default function TermsPage() {
     <>
       <main className="flex flex-1 flex-col bg-cream">
         <PageHeader />
-        <LegalDocument title="이용약관" effectiveDate="2026년 8월 5일">
+        <LegalDocument title="이용약관" effectiveDate="2026년 8월 9일">
           <h2>제1조 (목적)</h2>
           <p>
             이 약관은 Career Direct Korea(이하 &ldquo;회사&rdquo;)가 제공하는
@@ -35,6 +35,11 @@ export default function TermsPage() {
             <li>
               &ldquo;진단도구&rdquo;란 서비스 제공을 위해 회사가 사용하는
               제3자 개발 진로·적성 진단 시스템을 의미합니다.
+            </li>
+            <li>
+              &ldquo;통합 패키지&rdquo;란 Career Direct 온라인 평가, 상세
+              보고서, 연속 3시간 결과 해석 컨설팅, 실행계획과 후속 자료를
+              함께 제공하는 서비스를 의미합니다.
             </li>
           </ol>
 
@@ -80,8 +85,12 @@ export default function TermsPage() {
           <h2>제6조 (이용신청 및 계약의 성립)</h2>
           <ol>
             <li>
-              이용자는 회사가 정한 신청 절차(상담 신청, 결제 등)에 따라
-              서비스 이용을 신청합니다.
+              이용자는 20분 무료 콜백 후 회사가 이메일로 안내하는 상품과
+              무통장입금 절차에 따라 서비스를 신청합니다.
+            </li>
+            <li>
+              회사가 입금을 확인하고 입금 확인 이메일을 발송하면 유료 서비스
+              이용계약이 성립합니다.
             </li>
             <li>
               회사는 다음 각 호에 해당하는 신청에 대하여 승낙을 하지 않거나

@@ -15,6 +15,13 @@ export const analyticsEventNames = [
   "callback_reschedule_requested",
   "callback_schedule_reconfirmed",
   "callback_reminder_sent",
+  "payment_instruction_sent",
+  "payment_confirmed",
+  "assessment_link_issued",
+  "assessment_registered",
+  "assessment_completed",
+  "consultation_completed",
+  "payment_refunded",
 ] as const;
 
 export type AnalyticsEventName = (typeof analyticsEventNames)[number];
@@ -29,6 +36,13 @@ const serverOnlyEventNames = new Set<AnalyticsEventName>([
   "callback_reschedule_requested",
   "callback_schedule_reconfirmed",
   "callback_reminder_sent",
+  "payment_instruction_sent",
+  "payment_confirmed",
+  "assessment_link_issued",
+  "assessment_registered",
+  "assessment_completed",
+  "consultation_completed",
+  "payment_refunded",
 ]);
 
 const EVENT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -90,6 +104,7 @@ export async function recordAnalyticsEvent(input: {
   path?: string | null;
   ctaLocation?: string | null;
   utm?: Attribution;
+  productCode?: string | null;
 }) {
   const fallback = input.utm?.utmSource || input.utm?.utmMedium || input.utm?.utmCampaign
     ? {} : await firstAttribution(input.anonymousId ?? null);
@@ -103,6 +118,7 @@ export async function recordAnalyticsEvent(input: {
     utmSource: input.utm?.utmSource ?? fallback.utmSource ?? null,
     utmMedium: input.utm?.utmMedium ?? fallback.utmMedium ?? null,
     utmCampaign: input.utm?.utmCampaign ?? fallback.utmCampaign ?? null,
+    productCode: input.productCode ?? null,
   }).onConflictDoNothing();
 }
 

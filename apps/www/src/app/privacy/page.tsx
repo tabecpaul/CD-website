@@ -13,10 +13,6 @@ export default function PrivacyPage() {
       <main className="flex flex-1 flex-col bg-cream">
         <PageHeader />
         <LegalDocument title="개인정보처리방침" effectiveDate="2026년 8월 9일">
-          <p className="legal-note">
-            대괄호([ ])로 표시된 항목은 결제대행사(PG사) 상호 확정 후
-            업데이트가 필요합니다.
-          </p>
 
           <h2>1. 개인정보의 처리 목적</h2>
           <p>
@@ -109,10 +105,6 @@ export default function PrivacyPage() {
                 <td>Plus Five Five, Inc. (Resend)</td>
                 <td>이메일 발송</td>
               </tr>
-              <tr>
-                <td>[신용카드 PG사명]</td>
-                <td>신용카드 결제 처리</td>
-              </tr>
             </tbody>
           </table>
           <p>
@@ -155,10 +147,8 @@ export default function PrivacyPage() {
             <li>무료 상담 신청 필수항목: 이름, 이메일, 전화번호</li>
             <li>검사 콜백 신청 및 일정 관리 필수항목: 이름, 이메일, 휴대전화, 희망 날짜·시간대, 상담 주제, 확정 일정, 개인정보 수집·이용 동의 여부</li>
             <li>검사 콜백 신청 및 일정 관리 선택항목: 성별, 연령대, 혼인 여부, 기타 상담 내용, 일정 변경 희망 날짜·시간대·메시지, 마케팅 정보 수신 동의 여부, 유입 캠페인 정보</li>
-            <li>
-              결제 시 추가 수집 항목: 결제수단 정보(카드번호 전체는 저장하지
-              않으며 결제대행사를 통해 처리됩니다)
-            </li>
+            <li>결제 및 서비스 관리 항목: 선택 상품, 가격, 입금·환불 상태와 처리 시각, 증빙 유형·발행 상태, 평가·컨설팅 진행 상태</li>
+            <li>회사는 사업자등록증 파일, 환불 계좌, Career Direct 본부 평가 링크 원문을 서비스 시스템에 저장하지 않습니다.</li>
           </ul>
 
           <h2>8. 개인정보의 파기</h2>

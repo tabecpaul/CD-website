@@ -23,7 +23,9 @@ type FunnelRow = {
 };
 type EmailRow = { sent: number; delivered: number; bounced: number; complained: number; unsubscribed: number };
 export type UtmRow = FunnelRow & { utmSource: string; utmMedium: string; utmCampaign: string };
-type CallbackOperationsRow = { newRequests: number; callbackCompleted: number; paymentSent: number; paid: number; assessmentInProgress: number };
+type CallbackOperationsRow = { newRequests: number; callbackCompleted: number };
+type PaymentOperationsRow = { paymentSent: number; paid: number; registered: number; assessmentCompleted: number; consultationCompleted: number; refunded: number; grossRevenue: number; refundedAmount: number };
+export type ProductPaymentRow = { productCode: string; productName: string; paymentSent: number; paid: number; consultationCompleted: number; grossRevenue: number; refundedAmount: number };
 
 function numeric<T extends Record<string, unknown>>(row: T) {
   return Object.fromEntries(Object.entries(row).map(([key, value]) => [key, typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value])) as T;
@@ -34,7 +36,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
   // Raw postgres.js queries do not serialize Date instances in every runtime.
   // Pass an ISO string and cast it explicitly so Vercel and local builds behave alike.
   const startIso = start.toISOString();
-  const [funnelResult, emailResult, unsubscribedResult, utmResult, callbackOperationsResult] = await Promise.all([
+  const [funnelResult, emailResult, unsubscribedResult, utmResult, callbackOperationsResult, paymentOperationsResult, productPaymentsResult] = await Promise.all([
     db.execute(sql`
       select
         count(distinct anonymous_id) filter (where event_name = 'landing_viewed')::int as visitors,
@@ -76,18 +78,38 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
     db.execute(sql`
       select
         count(*) filter (where status = 'new')::int as "newRequests",
-        count(*) filter (where status = 'callback_completed')::int as "callbackCompleted",
-        count(*) filter (where status = 'payment_sent')::int as "paymentSent",
-        count(*) filter (where status = 'paid')::int as paid,
-        count(*) filter (where status = 'assessment_in_progress')::int as "assessmentInProgress"
+        count(*) filter (where status = 'callback_completed')::int as "callbackCompleted"
       from assessment_callback_requests
       where created_at >= ${startIso}::timestamptz
+    `),
+    db.execute(sql`
+      select
+        count(*) filter (where instruction_sent_at >= ${startIso}::timestamptz)::int as "paymentSent",
+        count(*) filter (where paid_at >= ${startIso}::timestamptz)::int as paid,
+        count(*) filter (where assessment_registered_at >= ${startIso}::timestamptz)::int as registered,
+        count(*) filter (where assessment_completed_at >= ${startIso}::timestamptz)::int as "assessmentCompleted",
+        count(*) filter (where consultation_completed_at >= ${startIso}::timestamptz)::int as "consultationCompleted",
+        count(*) filter (where refund_completed_at >= ${startIso}::timestamptz)::int as refunded,
+        coalesce(sum(total_amount) filter (where paid_at >= ${startIso}::timestamptz), 0)::int as "grossRevenue",
+        coalesce(sum(refund_final_amount) filter (where refund_completed_at >= ${startIso}::timestamptz), 0)::int as "refundedAmount"
+      from assessment_callback_payments
+    `),
+    db.execute(sql`
+      select product_code as "productCode", product_name as "productName",
+        count(*) filter (where instruction_sent_at >= ${startIso}::timestamptz)::int as "paymentSent",
+        count(*) filter (where paid_at >= ${startIso}::timestamptz)::int as paid,
+        count(*) filter (where consultation_completed_at >= ${startIso}::timestamptz)::int as "consultationCompleted",
+        coalesce(sum(total_amount) filter (where paid_at >= ${startIso}::timestamptz), 0)::int as "grossRevenue",
+        coalesce(sum(refund_final_amount) filter (where refund_completed_at >= ${startIso}::timestamptz), 0)::int as "refundedAmount"
+      from assessment_callback_payments
+      group by product_code, product_name order by paid desc
     `),
   ]);
   const funnel = numeric((funnelResult[0] ?? {}) as FunnelRow);
   const rawEmail = numeric((emailResult[0] ?? {}) as Omit<EmailRow, "unsubscribed">);
   const unsubscribed = Number((unsubscribedResult[0] as { unsubscribed?: number } | undefined)?.unsubscribed ?? 0);
   const callbackOperations = numeric((callbackOperationsResult[0] ?? {}) as CallbackOperationsRow);
+  const paymentOperations = numeric((paymentOperationsResult[0] ?? {}) as PaymentOperationsRow);
   return {
     start,
     funnel: { visitors: funnel.visitors ?? 0, leads: funnel.leads ?? 0, downloads: funnel.downloads ?? 0, ctaClicks: funnel.ctaClicks ?? 0, consultations: funnel.consultations ?? 0, callbackClicks: funnel.callbackClicks ?? 0, callbacks: funnel.callbacks ?? 0 },
@@ -95,10 +117,14 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
     callbackOperations: {
       newRequests: callbackOperations.newRequests ?? 0,
       callbackCompleted: callbackOperations.callbackCompleted ?? 0,
-      paymentSent: callbackOperations.paymentSent ?? 0,
-      paid: callbackOperations.paid ?? 0,
-      assessmentInProgress: callbackOperations.assessmentInProgress ?? 0,
     },
+    paymentOperations: {
+      paymentSent: paymentOperations.paymentSent ?? 0, paid: paymentOperations.paid ?? 0,
+      registered: paymentOperations.registered ?? 0, assessmentCompleted: paymentOperations.assessmentCompleted ?? 0,
+      consultationCompleted: paymentOperations.consultationCompleted ?? 0, refunded: paymentOperations.refunded ?? 0,
+      grossRevenue: paymentOperations.grossRevenue ?? 0, refundedAmount: paymentOperations.refundedAmount ?? 0,
+    },
+    productPayments: productPaymentsResult.map((row) => numeric(row as ProductPaymentRow)),
     utm: utmResult.map((row) => numeric(row as UtmRow)),
   };
 }
