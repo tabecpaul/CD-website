@@ -26,7 +26,10 @@ export async function POST(request: Request) {
     attempts.delete(key);
     const session = createAdminSession();
     const response = Response.json({ ok: true });
-    response.headers.append("Set-Cookie", `${ADMIN_COOKIE}=${session.value}; Max-Age=${session.maxAge}; Path=/admin; HttpOnly; Secure; SameSite=Strict`);
+    // Remove the legacy path-scoped cookie before issuing a site-wide cookie.
+    // Admin API routes live under /api/admin and cannot receive Path=/admin cookies.
+    response.headers.append("Set-Cookie", `${ADMIN_COOKIE}=; Max-Age=0; Path=/admin; HttpOnly; Secure; SameSite=Strict`);
+    response.headers.append("Set-Cookie", `${ADMIN_COOKIE}=${session.value}; Max-Age=${session.maxAge}; Path=/; HttpOnly; Secure; SameSite=Strict`);
     return response;
   } catch {
     return Response.json({ error: "invalid_request" }, { status: 400 });
