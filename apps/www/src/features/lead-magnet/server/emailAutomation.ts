@@ -1,4 +1,4 @@
-import { SendEmailCommand, SESv2Client } from "@aws-sdk/client-sesv2";
+import { Resend } from "resend";
 import { and, eq, lte } from "drizzle-orm";
 import { db, leadMagnetEmailJobs, leadMagnetLeads } from "@newland/db";
 
@@ -40,22 +40,17 @@ const content: Record<EmailKind, { subject: string; eyebrow: string; title: stri
   },
 };
 
-function encodeHeader(value: string) {
-  return `=?UTF-8?B?${Buffer.from(value).toString("base64")}?=`;
-}
-
 function htmlEscape(value: string) {
   return value.replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]!);
 }
 
 function config() {
-  const region = process.env.AWS_REGION ?? "ap-northeast-2";
-  const from = process.env.SES_FROM_EMAIL?.trim();
-  const replyTo = process.env.SES_REPLY_TO_EMAIL?.trim() ?? from;
-  const configurationSet = process.env.SES_CONFIGURATION_SET?.trim();
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.RESEND_FROM_EMAIL?.trim();
+  const replyTo = process.env.RESEND_REPLY_TO_EMAIL?.trim() ?? from;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.careerdirect.kr";
-  if (!from || !replyTo || !configurationSet) throw new Error("SES_CONFIG_MISSING");
-  return { region, from, replyTo, configurationSet, siteUrl: siteUrl.replace(/\/$/, "") };
+  if (!apiKey || !from || !replyTo) throw new Error("RESEND_CONFIG_MISSING");
+  return { apiKey, from, replyTo, siteUrl: siteUrl.replace(/\/$/, "") };
 }
 
 export async function replaceLeadEmailSchedule(leadId: number, coachingAgreed: boolean, now = new Date()) {
@@ -67,13 +62,14 @@ export async function replaceLeadEmailSchedule(leadId: number, coachingAgreed: b
 }
 
 function buildMessage(kind: EmailKind, email: string, downloadToken: string, unsubscribeToken: string | null) {
-  const { region, from, replyTo, configurationSet, siteUrl } = config();
+  const { apiKey, from, replyTo, siteUrl } = config();
   const item = content[kind];
   const coaching = kind !== "delivery";
   const actionUrl = kind === "delivery"
     ? `${siteUrl}/api/career-check/download?token=${downloadToken}`
     : kind === "coaching-3" ? "https://www.careerdirect.org/" : `${siteUrl}/career-check`;
   const unsubscribeUrl = unsubscribeToken ? `${siteUrl}/unsubscribe?token=${unsubscribeToken}` : `${siteUrl}/privacy`;
+  const oneClickUnsubscribeUrl = unsubscribeToken ? `${siteUrl}/api/unsubscribe?token=${unsubscribeToken}` : unsubscribeUrl;
   const action = item.action
     ? `<a href="${actionUrl}" style="display:inline-block;background:#c9a24e;color:#17324d;text-decoration:none;font-weight:700;padding:15px 22px;border-radius:10px;margin-top:24px">${htmlEscape(item.action)}</a>`
     : "";
@@ -82,34 +78,18 @@ function buildMessage(kind: EmailKind, email: string, downloadToken: string, uns
     : "이 메일은 사용자가 요청한 자료를 전달하는 서비스 메시지입니다.";
   const html = `<!doctype html><html lang="ko"><body style="margin:0;background:#f7f3eb;color:#17324d;font-family:Arial,'Apple SD Gothic Neo',sans-serif"><div style="max-width:620px;margin:0 auto;padding:32px 18px"><div style="background:#17324d;border-radius:22px;padding:38px 34px"><p style="margin:0 0 18px;color:#76c7d2;font-size:12px;font-weight:700;letter-spacing:.12em">${htmlEscape(item.eyebrow)}</p><h1 style="margin:0;color:#fff;font-size:28px;line-height:1.35">${htmlEscape(item.title)}</h1><p style="margin:22px 0 0;color:#dce6e9;font-size:16px;line-height:1.8">${htmlEscape(item.body)}</p>${action}</div><p style="margin:24px 8px 0;color:#68777d;font-size:12px;line-height:1.7">${footer}<br>Career Direct Korea · 경기도 의왕시 오봉산단1로 12, 에이스비전 21 10층 1012호</p></div></body></html>`;
   const text = `${item.title}\n\n${item.body}${item.action ? `\n\n${item.action}: ${actionUrl}` : ""}\n\n${coaching ? `수신 거부: ${unsubscribeUrl}` : "이 메일은 사용자가 요청한 자료를 전달하는 서비스 메시지입니다."}`;
-  const headers = [
-    `From: Career Direct Korea <${from}>`,
-    `To: ${email}`,
-    `Reply-To: ${replyTo}`,
-    `Subject: ${encodeHeader(item.subject)}`,
-    "MIME-Version: 1.0",
-    ...(coaching ? [`List-Unsubscribe: <${unsubscribeUrl}>`, "List-Unsubscribe-Post: List-Unsubscribe=One-Click"] : []),
-    'Content-Type: multipart/alternative; boundary="career-direct-boundary"',
-    "",
-    "--career-direct-boundary",
-    'Content-Type: text/plain; charset="UTF-8"',
-    "Content-Transfer-Encoding: 8bit",
-    "",
-    text,
-    "--career-direct-boundary",
-    'Content-Type: text/html; charset="UTF-8"',
-    "Content-Transfer-Encoding: 8bit",
-    "",
-    html,
-    "--career-direct-boundary--",
-  ];
   return {
-    region,
-    from,
+    apiKey,
+    from: `Career Direct Korea <${from}>`,
     replyTo,
-    configurationSet,
     recipient: email,
-    raw: Buffer.from(headers.join("\r\n")),
+    subject: item.subject,
+    html,
+    text,
+    headers: coaching ? {
+      "List-Unsubscribe": `<${oneClickUnsubscribeUrl}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    } : undefined,
   };
 }
 
@@ -133,19 +113,26 @@ export async function processDueEmailJobs(limit = 20) {
     }
     try {
       const message = buildMessage(kind, lead.email, lead.downloadToken, lead.unsubscribeToken);
-      const response = await new SESv2Client({ region: message.region }).send(new SendEmailCommand({
-        FromEmailAddress: message.from,
-        Destination: { ToAddresses: [message.recipient] },
-        ReplyToAddresses: [message.replyTo],
-        ConfigurationSetName: message.configurationSet,
-        EmailTags: [{ Name: "job_id", Value: String(job.id) }],
-        Content: { Raw: { Data: message.raw } },
-      }));
-      if (!response.MessageId) throw new Error("SES_MESSAGE_ID_MISSING");
+      const response = await new Resend(message.apiKey).emails.send({
+        from: message.from,
+        to: message.recipient,
+        replyTo: message.replyTo,
+        subject: message.subject,
+        html: message.html,
+        text: message.text,
+        headers: message.headers,
+        tags: [{ name: "job_id", value: String(job.id) }],
+      });
+      if (response.error) {
+        const error = new Error(response.error.message);
+        error.name = response.error.name;
+        throw error;
+      }
+      if (!response.data?.id) throw new Error("RESEND_EMAIL_ID_MISSING");
       await db.update(leadMagnetEmailJobs).set({
         status: "sent",
         sentAt: new Date(),
-        providerMessageId: response.MessageId,
+        providerMessageId: response.data.id,
         updatedAt: new Date(),
         lastErrorCode: null,
       }).where(eq(leadMagnetEmailJobs.id, job.id));
@@ -153,15 +140,11 @@ export async function processDueEmailJobs(limit = 20) {
     } catch (error) {
       const attempts = job.attempts + 1;
       const code = error instanceof Error ? error.name.slice(0, 80) : "UNKNOWN";
-      const metadata = error && typeof error === "object" && "$metadata" in error
-        ? (error.$metadata as { httpStatusCode?: number })
-        : undefined;
       console.error("Lead magnet email send failed", {
         jobId: job.id,
         kind,
         errorName: error instanceof Error ? error.name : "UNKNOWN",
         errorMessage: error instanceof Error ? error.message : "Unknown email send error",
-        httpStatusCode: metadata?.httpStatusCode,
       });
       await db.update(leadMagnetEmailJobs).set({ status: attempts >= 5 ? "failed" : "pending", attempts, lastErrorCode: code, updatedAt: new Date() }).where(eq(leadMagnetEmailJobs.id, job.id));
       summary.failed++;

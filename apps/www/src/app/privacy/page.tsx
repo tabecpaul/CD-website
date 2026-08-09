@@ -12,7 +12,7 @@ export default function PrivacyPage() {
     <>
       <main className="flex flex-1 flex-col bg-cream">
         <PageHeader />
-        <LegalDocument title="개인정보처리방침" effectiveDate="2026년 8월 5일">
+        <LegalDocument title="개인정보처리방침" effectiveDate="2026년 8월 9일">
           <p className="legal-note">
             대괄호([ ])로 표시된 항목은 결제대행사(PG사) 상호 확정 후
             업데이트가 필요합니다.
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
                 <td>상담 신청 정보 및 동의 이력 데이터베이스 보관</td>
               </tr>
               <tr>
-                <td>Amazon Web Services (AWS SES)</td>
+                <td>Plus Five Five, Inc. (Resend)</td>
                 <td>이메일 발송</td>
               </tr>
               <tr>
@@ -112,7 +112,25 @@ export default function PrivacyPage() {
             명시하고 있습니다.
           </p>
 
-          <h2>5. 정보주체의 권리·의무 및 행사방법</h2>
+          <h2>5. 개인정보의 국외 이전</h2>
+          <p>
+            회사는 이메일 발송 서비스 제공을 위해 다음과 같이 개인정보를
+            국외로 이전합니다. 국외 이전을 원하지 않는 경우 무료 자료 신청을
+            하지 않거나 개인정보 보호책임자에게 처리를 요청할 수 있으며,
+            이 경우 이메일을 통한 자료 및 코칭 콘텐츠 제공이 제한됩니다.
+          </p>
+          <table>
+            <tbody>
+              <tr><th>이전받는 자</th><td>Plus Five Five, Inc. (Resend)</td></tr>
+              <tr><th>이전 국가</th><td>미국</td></tr>
+              <tr><th>이전 항목</th><td>이름(입력한 경우), 이메일 주소, 이메일 본문 및 발송 메타데이터</td></tr>
+              <tr><th>이전 목적</th><td>진로방향 자가진단 PDF 및 선택 동의한 후속 코칭 이메일 발송</td></tr>
+              <tr><th>이전 시점·방법</th><td>이메일 발송 요청 시 암호화된 네트워크를 통한 전송</td></tr>
+              <tr><th>보유·이용 기간</th><td>서비스 제공 및 관련 법령상 보유 목적 달성 시까지 또는 위탁계약 종료 후 삭제 시까지</td></tr>
+            </tbody>
+          </table>
+
+          <h2>6. 정보주체의 권리·의무 및 행사방법</h2>
           <p>
             정보주체는 회사에 대해 언제든지 개인정보 열람·정정·삭제·처리정지
             요구 등의 권리를 행사할 수 있습니다. 권리 행사는 서면, 이메일(
@@ -120,7 +138,7 @@ export default function PrivacyPage() {
             통하여 하실 수 있으며 회사는 이에 대해 지체 없이 조치하겠습니다.
           </p>
 
-          <h2>6. 처리하는 개인정보 항목</h2>
+          <h2>7. 처리하는 개인정보 항목</h2>
           <ul>
             <li>진로방향 자가진단 신청 필수항목: 이메일, 개인정보 수집·이용 동의 여부</li>
             <li>진로방향 자가진단 신청 선택항목: 이메일 미니 코칭 수신 동의 여부, 유입 캠페인 정보</li>
@@ -131,7 +149,7 @@ export default function PrivacyPage() {
             </li>
           </ul>
 
-          <h2>7. 개인정보의 파기</h2>
+          <h2>8. 개인정보의 파기</h2>
           <p>
             회사는 개인정보 보유기간의 경과, 처리목적 달성 등 개인정보가
             불필요하게 되었을 때에는 지체 없이 해당 개인정보를 파기합니다.
@@ -139,7 +157,7 @@ export default function PrivacyPage() {
             사용하여 삭제합니다.
           </p>
 
-          <h2>8. 개인정보의 안전성 확보조치</h2>
+          <h2>9. 개인정보의 안전성 확보조치</h2>
           <ul>
             <li>개인정보 취급 담당자의 최소화 및 교육</li>
             <li>개인정보에 대한 접근 제한</li>
@@ -147,7 +165,7 @@ export default function PrivacyPage() {
             <li>개인정보의 암호화(전송구간 암호화 등)</li>
           </ul>
 
-          <h2>9. 개인정보 보호책임자</h2>
+          <h2>10. 개인정보 보호책임자</h2>
           <table>
             <tbody>
               <tr>
@@ -175,14 +193,14 @@ export default function PrivacyPage() {
             보호책임자에게 문의하실 수 있습니다.
           </p>
 
-          <h2>10. 개인정보 처리방침의 변경</h2>
+          <h2>11. 개인정보 처리방침의 변경</h2>
           <p>
             이 개인정보처리방침은 시행일로부터 적용되며, 법령 및 방침에
             따른 변경내용의 추가, 삭제 및 정정이 있는 경우에는 변경사항의
             시행 7일 전부터 공지사항을 통하여 고지할 것입니다.
           </p>
 
-          <h2>11. 권익침해 구제방법</h2>
+          <h2>12. 권익침해 구제방법</h2>
           <p>
             정보주체는 개인정보침해로 인한 구제를 받기 위하여
             개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터
