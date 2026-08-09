@@ -11,6 +11,27 @@ export const callbackStatuses = [
 
 export type CallbackStatus = (typeof callbackStatuses)[number];
 
+export const scheduleStatuses = [
+  "unconfirmed",
+  "confirmed",
+  "reschedule_requested",
+  "completed",
+  "cancelled",
+] as const;
+
+export type ScheduleStatus = (typeof scheduleStatuses)[number];
+
+export const scheduleStatusLabels: Record<ScheduleStatus, string> = {
+  unconfirmed: "일정 미확정",
+  confirmed: "일정 확정",
+  reschedule_requested: "일정 변경 요청",
+  completed: "콜백 완료",
+  cancelled: "콜백 취소",
+};
+
+export const CALLBACK_DURATION_MINUTES = 20;
+export const CALLBACK_TIME_ZONE = "Asia/Seoul";
+
 export const callbackStatusLabels: Record<CallbackStatus, string> = {
   new: "신규 신청",
   scheduled: "콜백 일정 확정",

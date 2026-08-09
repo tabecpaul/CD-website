@@ -11,6 +11,10 @@ export const analyticsEventNames = [
   "callback_submitted",
   "official_site_clicked",
   "consultation_submitted",
+  "callback_schedule_confirmed",
+  "callback_reschedule_requested",
+  "callback_schedule_reconfirmed",
+  "callback_reminder_sent",
 ] as const;
 
 export type AnalyticsEventName = (typeof analyticsEventNames)[number];
@@ -19,6 +23,13 @@ export type Attribution = {
   utmMedium?: string | null;
   utmCampaign?: string | null;
 };
+
+const serverOnlyEventNames = new Set<AnalyticsEventName>([
+  "callback_schedule_confirmed",
+  "callback_reschedule_requested",
+  "callback_schedule_reconfirmed",
+  "callback_reminder_sent",
+]);
 
 const EVENT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VISITOR_ID = /^[0-9a-f-]{36}$/i;
@@ -39,6 +50,7 @@ export function parsePublicEvent(value: unknown) {
   if (typeof body.eventName !== "string" || !analyticsEventNames.includes(body.eventName as AnalyticsEventName)) {
     throw new Error("ANALYTICS_EVENT_NAME_INVALID");
   }
+  if (serverOnlyEventNames.has(body.eventName as AnalyticsEventName)) throw new Error("ANALYTICS_EVENT_NAME_INVALID");
   const path = limited(body.path, 160);
   if (path && !path.startsWith("/")) throw new Error("ANALYTICS_PATH_INVALID");
   return {

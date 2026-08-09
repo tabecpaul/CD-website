@@ -153,6 +153,19 @@ export const assessmentCallbackRequests = pgTable(
     customerEmailError: varchar("customer_email_error", { length: 80 }),
     adminEmailId: varchar("admin_email_id", { length: 128 }),
     customerEmailId: varchar("customer_email_id", { length: 128 }),
+    scheduleStatus: varchar("schedule_status", { length: 32 }).notNull().default("unconfirmed"),
+    confirmedStartAt: timestamp("confirmed_start_at", { withTimezone: true }),
+    confirmedEndAt: timestamp("confirmed_end_at", { withTimezone: true }),
+    scheduleVersion: integer("schedule_version").notNull().default(0),
+    confirmationEmailStatus: varchar("confirmation_email_status", { length: 16 }),
+    confirmationEmailId: varchar("confirmation_email_id", { length: 128 }),
+    confirmationEmailError: varchar("confirmation_email_error", { length: 80 }),
+    confirmationEmailSentAt: timestamp("confirmation_email_sent_at", { withTimezone: true }),
+    reminderEmailSentAt: timestamp("reminder_email_sent_at", { withTimezone: true }),
+    rescheduleRequestedAt: timestamp("reschedule_requested_at", { withTimezone: true }),
+    reschedulePreferredDate: date("reschedule_preferred_date", { mode: "string" }),
+    rescheduleTimeSlot: varchar("reschedule_time_slot", { length: 24 }),
+    rescheduleMessage: varchar("reschedule_message", { length: 500 }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -160,5 +173,45 @@ export const assessmentCallbackRequests = pgTable(
     index("assessment_callback_status_created_idx").on(table.status, table.createdAt),
     index("assessment_callback_preferred_idx").on(table.preferredDate, table.timeSlot),
     index("assessment_callback_email_created_idx").on(table.email, table.createdAt),
+    index("assessment_callback_schedule_start_idx").on(table.scheduleStatus, table.confirmedStartAt),
+  ],
+);
+
+export const callbackScheduleEmailJobs = pgTable(
+  "callback_schedule_email_jobs",
+  {
+    id: serial("id").primaryKey(),
+    callbackRequestId: integer("callback_request_id").notNull().references(() => assessmentCallbackRequests.id, { onDelete: "cascade" }),
+    scheduleVersion: integer("schedule_version").notNull(),
+    kind: varchar("kind", { length: 32 }).notNull(),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+    status: varchar("status", { length: 16 }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    lastErrorCode: varchar("last_error_code", { length: 80 }),
+    providerMessageId: varchar("provider_message_id", { length: 128 }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("callback_schedule_jobs_request_version_kind_unique").on(table.callbackRequestId, table.scheduleVersion, table.kind),
+    index("callback_schedule_jobs_due_idx").on(table.status, table.scheduledAt),
+  ],
+);
+
+export const callbackScheduleTokens = pgTable(
+  "callback_schedule_tokens",
+  {
+    id: serial("id").primaryKey(),
+    callbackRequestId: integer("callback_request_id").notNull().references(() => assessmentCallbackRequests.id, { onDelete: "cascade" }),
+    scheduleVersion: integer("schedule_version").notNull(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("callback_schedule_tokens_hash_unique").on(table.tokenHash),
+    index("callback_schedule_tokens_request_version_idx").on(table.callbackRequestId, table.scheduleVersion),
   ],
 );
