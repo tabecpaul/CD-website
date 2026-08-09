@@ -7,6 +7,9 @@ export const analyticsEventNames = [
   "lead_submitted",
   "pdf_downloaded",
   "assessment_cta_clicked",
+  "callback_cta_clicked",
+  "callback_submitted",
+  "official_site_clicked",
   "consultation_submitted",
 ] as const;
 

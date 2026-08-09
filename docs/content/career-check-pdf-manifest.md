@@ -4,7 +4,7 @@
 - 승인일: 2026-08-07
 - 문서 버전: `career-direction-check-ko-v1.0`
 - 실제 제작일: 2026-08-07
-- 최종 PDF SHA-256: `16395360108590e284026ee1cdda9adb21798c38fb57f26e3b98025eafb70366`
+- 최종 PDF SHA-256: `c4b2d4f012773fada07f7484929ffdf3af9cce5d2e52ef8eeb250bab862a2841`
 - 목표 산출물: `apps/www/private-assets/career-direction-check-ko-v1.pdf`
 - 검수 산출물: `output/pdf/career-direction-check-ko-v1.0.pdf`
 - 형식: A4 세로, 12페이지
@@ -308,11 +308,11 @@
 5. 인터랙티브 실행계획
 6. 이후 코칭
 
-**주 CTA:** `Career Direct 온라인 평가 알아보기`
+**주 CTA:** `20분 무료 콜백 신청하기`
 
 - 링크 및 QR 경유 목적지: `https://start.careerdirect.kr/go/assessment?source=pdf_qr`
-- 최종 평가 목적지: `https://careerdirect.org/?language_code=KO`
-- 인쇄용 표기 URL: `www.careerdirect.org`
+- 최종 목적지: `https://start.careerdirect.kr/assessment-consultation`
+- 인쇄용 표기 URL: `start.careerdirect.kr`
 
 **보조 CTA:** `컨설턴트 코칭 과정 알아보기`
 
@@ -323,7 +323,7 @@
 - 공식 사이트: `www.careerdirect.kr`
 - 주소: `경기도 의왕시 오봉산단1로 12, 에이스비전 21 10층 1012호`
 
-PDF 안에는 개인정보를 직접 입력하는 상담 신청 폼을 넣지 않는다. CTA는 공식 사이트의 HTTPS URL 또는 검증된 QR 코드로 연결하고, 인쇄 사용자를 위해 짧은 URL도 함께 표기한다.
+PDF 안에는 개인정보를 직접 입력하는 상담 신청 폼을 넣지 않는다. CTA는 Career Direct Korea의 HTTPS 콜백 신청 페이지 또는 검증된 QR 코드로 연결하고, 인쇄 사용자를 위해 짧은 URL도 함께 표기한다.
 
 ## 측정과 전환 규칙
 
@@ -331,7 +331,7 @@ PDF 안에는 개인정보를 직접 입력하는 상담 신청 폼을 넣지 �
 - PDF 안의 평가·상담 링크는 서로 다른 비식별 캠페인 파라미터를 사용한다.
 - 이메일 주소나 원본 리드 식별자를 URL에 넣지 않는다.
 - QR 코드와 텍스트 링크는 같은 목적지로 연결한다.
-- 내부 랜딩·상담 링크는 `careerdirect.kr`, 온라인 평가는 공식 외부 도메인 `careerdirect.org`만 사용한다.
+- 검사 관심 CTA는 Career Direct Korea의 콜백 신청 페이지로 연결하고, 본부 한국어 사이트는 보조 정보 링크로만 사용한다.
 - 공개 전에 모든 링크의 HTTPS 응답, 리디렉션, 모바일 동작을 검증한다.
 
 ## 금지 표현과 검증 필요 항목

@@ -19,8 +19,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
     ["고유 방문자", data.funnel.visitors, null],
     ["PDF 신청", data.funnel.leads, data.funnel.visitors],
     ["PDF 다운로드", data.funnel.downloads, data.funnel.leads],
-    ["평가 CTA 클릭", data.funnel.ctaClicks, data.funnel.downloads],
-    ["상담 신청", data.funnel.consultations, data.funnel.ctaClicks],
+    ["콜백 CTA 클릭", data.funnel.callbackClicks, data.funnel.downloads],
+    ["콜백 신청", data.funnel.callbacks, data.funnel.callbackClicks],
   ] as const;
   const email = [
     ["발송", data.email.sent], ["전달", data.email.delivered], ["반송", data.email.bounced],
@@ -31,7 +31,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div><p className="text-xs font-black tracking-[.16em] text-teal">CAREER DIRECT KOREA</p><h1 className="mt-2 text-3xl font-black sm:text-4xl">전환 분석</h1><p className="mt-2 text-sm text-navy/55">{data.start.toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })} 이후 집계 · 개인정보 미표시</p></div>
-          <LogoutButton />
+          <div className="flex items-center gap-4"><Link href="/admin/callbacks" className="text-sm font-bold text-teal underline">검사 콜백 관리</Link><LogoutButton /></div>
         </header>
         <nav className="mt-8 flex gap-2" aria-label="조회 기간">
           {[7, 30, 90].map((days) => <Link key={days} href={`/admin/analytics?period=${days}`} className={`rounded-full px-4 py-2 text-sm font-bold ${period === days ? "bg-navy text-white" : "border border-navy/10 bg-white text-navy"}`}>최근 {days}일</Link>)}
@@ -41,7 +41,9 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
 
         <section className="mt-10"><h2 className="text-xl font-black">이메일 상태</h2><div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-5">{email.map(([label, value]) => <article key={label} className="rounded-2xl border border-navy/10 bg-white p-5"><p className="text-sm font-bold text-navy/55">{label}</p><strong className="mt-2 block text-2xl font-black">{value.toLocaleString()}</strong>{label !== "발송" && label !== "수신 거부" ? <p className="mt-2 text-xs text-navy/50">발송의 {percent(value, data.email.sent)}</p> : null}</article>)}</div></section>
 
-        <section className="mt-10"><h2 className="text-xl font-black">유입 성과</h2><div className="mt-4 overflow-x-auto rounded-2xl border border-navy/10 bg-white"><table className="min-w-[850px] w-full text-left text-sm"><thead className="bg-navy/[.04] text-xs text-navy/55"><tr>{["소스", "매체", "캠페인", "방문", "신청", "다운로드", "CTA", "상담", "방문→신청"].map((h) => <th key={h} className="px-4 py-3 font-bold">{h}</th>)}</tr></thead><tbody>{data.utm.length ? data.utm.map((row) => <tr key={`${row.utmSource}:${row.utmMedium}:${row.utmCampaign}`} className="border-t border-navy/8"><td className="px-4 py-3 font-semibold">{row.utmSource}</td><td className="px-4 py-3">{row.utmMedium}</td><td className="max-w-52 truncate px-4 py-3">{row.utmCampaign}</td><td className="px-4 py-3">{row.visitors}</td><td className="px-4 py-3">{row.leads}</td><td className="px-4 py-3">{row.downloads}</td><td className="px-4 py-3">{row.ctaClicks}</td><td className="px-4 py-3">{row.consultations}</td><td className="px-4 py-3 font-bold text-teal">{percent(row.leads, row.visitors)}</td></tr>) : <tr><td colSpan={9} className="px-4 py-10 text-center text-navy/45">선택한 기간에 수집된 이벤트가 없습니다.</td></tr>}</tbody></table></div></section>
+        <section className="mt-10"><h2 className="text-xl font-black">콜백 운영</h2><div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-5">{[["신규/미처리", data.callbackOperations.newRequests], ["콜백 완료", data.callbackOperations.callbackCompleted], ["결제 안내", data.callbackOperations.paymentSent], ["결제 완료", data.callbackOperations.paid], ["평가 진행", data.callbackOperations.assessmentInProgress]].map(([label, value]) => <article key={label} className="rounded-2xl border border-navy/10 bg-white p-5"><p className="text-sm font-bold text-navy/55">{label}</p><strong className="mt-2 block text-2xl font-black">{value.toLocaleString()}</strong></article>)}</div><p className="mt-3 text-xs text-navy/45">과거 평가 링크 클릭 {data.funnel.ctaClicks}건 · 일반 상담 신청 {data.funnel.consultations}건은 새 콜백 퍼널과 분리해 보존합니다.</p></section>
+
+        <section className="mt-10"><h2 className="text-xl font-black">유입 성과</h2><div className="mt-4 overflow-x-auto rounded-2xl border border-navy/10 bg-white"><table className="min-w-[920px] w-full text-left text-sm"><thead className="bg-navy/[.04] text-xs text-navy/55"><tr>{["소스", "매체", "캠페인", "방문", "PDF 신청", "다운로드", "콜백 CTA", "콜백 신청", "CTA→신청"].map((h) => <th key={h} className="px-4 py-3 font-bold">{h}</th>)}</tr></thead><tbody>{data.utm.length ? data.utm.map((row) => <tr key={`${row.utmSource}:${row.utmMedium}:${row.utmCampaign}`} className="border-t border-navy/8"><td className="px-4 py-3 font-semibold">{row.utmSource}</td><td className="px-4 py-3">{row.utmMedium}</td><td className="max-w-52 truncate px-4 py-3">{row.utmCampaign}</td><td className="px-4 py-3">{row.visitors}</td><td className="px-4 py-3">{row.leads}</td><td className="px-4 py-3">{row.downloads}</td><td className="px-4 py-3">{row.callbackClicks}</td><td className="px-4 py-3">{row.callbacks}</td><td className="px-4 py-3 font-bold text-teal">{percent(row.callbacks, row.callbackClicks)}</td></tr>) : <tr><td colSpan={9} className="px-4 py-10 text-center text-navy/45">선택한 기간에 수집된 이벤트가 없습니다.</td></tr>}</tbody></table></div></section>
       </div>
     </main>
   );

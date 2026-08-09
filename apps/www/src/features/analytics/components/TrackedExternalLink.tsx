@@ -1,17 +1,23 @@
 "use client";
 
 import type { AnchorHTMLAttributes, ReactNode } from "react";
+import type { AnalyticsEventName } from "@/features/analytics/server/events";
 
 export default function TrackedExternalLink({
   ctaLocation,
+  eventName = "assessment_cta_clicked",
   children,
   ...props
-}: AnchorHTMLAttributes<HTMLAnchorElement> & { ctaLocation: string; children: ReactNode }) {
+}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+  ctaLocation: string;
+  eventName?: AnalyticsEventName;
+  children: ReactNode;
+}) {
   function track() {
     const params = new URLSearchParams(window.location.search);
     const payload = JSON.stringify({
       eventId: crypto.randomUUID(),
-      eventName: "assessment_cta_clicked",
+      eventName,
       path: window.location.pathname,
       ctaLocation,
       utmSource: params.get("utm_source"),

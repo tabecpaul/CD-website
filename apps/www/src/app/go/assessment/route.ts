@@ -1,6 +1,5 @@
 import { recordAnalyticsEventSafely, visitorIdFromRequest } from "@/features/analytics/server/events";
 
-const KOREAN_ASSESSMENT_URL = "https://careerdirect.org/?language_code=KO";
 const TRACKING_TIMEOUT_MS = 1_200;
 
 async function waitForTracking(tracking: Promise<void>) {
@@ -19,22 +18,31 @@ async function waitForTracking(tracking: Promise<void>) {
 
 export async function GET(request: Request) {
   const source = new URL(request.url).searchParams.get("source");
+  const attribution = source === "pdf_qr"
+    ? { utmSource: "pdf", utmMedium: "qr", utmCampaign: "career_direction_check", ctaLocation: "pdf_qr" }
+    : source === "coaching_3"
+      ? { utmSource: "email", utmMedium: "coaching", utmCampaign: "coaching_3", ctaLocation: "coaching_3" }
+      : null;
 
-  if (source === "pdf_qr") {
+  if (attribution) {
     await waitForTracking(
       recordAnalyticsEventSafely({
-        eventName: "assessment_cta_clicked",
+        eventName: "callback_cta_clicked",
         anonymousId: visitorIdFromRequest(request),
         path: "/go/assessment",
-        ctaLocation: "pdf_qr",
-        utm: {
-          utmSource: "pdf",
-          utmMedium: "qr",
-          utmCampaign: "career_direction_check",
-        },
+        ctaLocation: attribution.ctaLocation,
+        utm: attribution,
       }),
     );
   }
 
-  return Response.redirect(KOREAN_ASSESSMENT_URL, 307);
+  const destination = new URL("/assessment-consultation", request.url);
+  if (attribution) {
+    destination.searchParams.set("source", source ?? "");
+    destination.searchParams.set("cta_location", attribution.ctaLocation);
+    destination.searchParams.set("utm_source", attribution.utmSource);
+    destination.searchParams.set("utm_medium", attribution.utmMedium);
+    destination.searchParams.set("utm_campaign", attribution.utmCampaign);
+  }
+  return Response.redirect(destination, 307);
 }

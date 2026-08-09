@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   let event: ReturnType<typeof parsePublicEvent>;
   try {
     event = parsePublicEvent(JSON.parse(text));
-    if (event.eventName !== "landing_viewed" && event.eventName !== "assessment_cta_clicked") {
+    if (!["landing_viewed", "assessment_cta_clicked", "callback_cta_clicked", "official_site_clicked"].includes(event.eventName)) {
       throw new Error("ANALYTICS_PUBLIC_EVENT_FORBIDDEN");
     }
   } catch {

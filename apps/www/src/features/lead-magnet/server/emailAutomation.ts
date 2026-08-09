@@ -32,11 +32,11 @@ const content: Record<EmailKind, { subject: string; eyebrow: string; title: stri
     body: "성격·흥미·재능·가치관 가운데 현재 업무와 가장 어긋난 영역은 무엇인가요? 하나를 고르고, 한 단계 나아지려면 무엇이 달라져야 하는지 적어보세요.",
   },
   "coaching-3": {
-    subject: "[광고] 결론보다 30일의 작은 실험을 시작하세요",
-    eyebrow: "6일 차 · 실행",
-    title: "방향은 작은 실험을 통해 선명해집니다.",
-    body: "앞으로 30일 동안 무엇을 확인하면 다음 방향이 조금 더 분명해질까요? 관심 직무 종사자 인터뷰, 작은 프로젝트처럼 되돌릴 수 있는 실험 하나와 시작 날짜를 정해보세요.",
-    action: "Career Direct 온라인 평가 알아보기",
+    subject: "[광고] 검사를 결정하기 전에 20분 먼저 이야기하세요",
+    eyebrow: "6일 차 · 다음 단계",
+    title: "혼자 결정하지 않아도 됩니다.",
+    body: "Career Direct 검사가 지금의 고민에 적합한지, 평가와 보고서 해석은 어떻게 진행되는지 궁금하다면 20분 무료 콜백으로 먼저 확인하세요. 신청만으로 결제되거나 검사가 시작되지 않습니다.",
+    action: "20분 무료 콜백 신청하기",
   },
 };
 
@@ -85,7 +85,7 @@ function buildMessage(kind: EmailKind, email: string, downloadToken: string, uns
   const coaching = kind !== "delivery";
   const actionUrl = kind === "delivery"
     ? `${siteUrl}/api/career-check/download?token=${downloadToken}`
-    : kind === "coaching-3" ? "https://careerdirect.org/?language_code=KO" : `${siteUrl}/career-check`;
+    : kind === "coaching-3" ? `${siteUrl}/go/assessment?source=coaching_3` : `${siteUrl}/career-check`;
   const unsubscribeUrl = unsubscribeToken ? `${siteUrl}/unsubscribe?token=${unsubscribeToken}` : `${siteUrl}/privacy`;
   const oneClickUnsubscribeUrl = unsubscribeToken ? `${siteUrl}/api/unsubscribe?token=${unsubscribeToken}` : unsubscribeUrl;
   const action = item.action
