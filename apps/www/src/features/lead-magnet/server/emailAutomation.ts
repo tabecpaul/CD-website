@@ -138,6 +138,20 @@ export async function processDueEmailJobs(limit = 20) {
       }).where(eq(leadMagnetEmailJobs.id, job.id));
       summary.sent++;
     } catch (error) {
+      if (error instanceof Error && error.message === "RESEND_CONFIG_MISSING") {
+        console.error("Lead magnet email send paused", {
+          jobId: job.id,
+          kind,
+          errorCode: "RESEND_CONFIG_MISSING",
+        });
+        await db.update(leadMagnetEmailJobs).set({
+          status: "pending",
+          lastErrorCode: "RESEND_CONFIG_MISSING",
+          updatedAt: new Date(),
+        }).where(eq(leadMagnetEmailJobs.id, job.id));
+        summary.skipped++;
+        continue;
+      }
       const attempts = job.attempts + 1;
       const code = error instanceof Error ? error.name.slice(0, 80) : "UNKNOWN";
       console.error("Lead magnet email send failed", {
