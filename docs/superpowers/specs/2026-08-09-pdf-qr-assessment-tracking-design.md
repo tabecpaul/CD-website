@@ -7,10 +7,11 @@
 ## 범위
 
 - 자체 경유 주소: `https://start.careerdirect.kr/go/assessment?source=pdf_qr`
-- 최종 목적지: `https://www.careerdirect.org/`
+- 최종 목적지: `https://careerdirect.org/?language_code=KO`
 - 기존 `assessment_cta_clicked` 이벤트와 관리자 전환 대시보드를 재사용한다.
 - 운영 PDF의 QR 이미지와 클릭 가능한 QR 링크를 경유 주소로 교체한다.
 - PDF 본문의 인쇄용 공식 URL 표기는 `www.careerdirect.org`로 유지한다.
+- 랜딩페이지의 평가 CTA와 후속 코칭 이메일의 평가 링크도 같은 한국어 목적지를 사용한다.
 
 ## 데이터 흐름
 
@@ -24,7 +25,7 @@
    - `utm_source`: `pdf`
    - `utm_medium`: `qr`
    - `utm_campaign`: `career_direction_check`
-5. 이벤트 기록 성공 여부와 관계없이 사용자를 공식 평가 페이지로 즉시 리다이렉트한다.
+5. 이벤트 기록 성공 여부와 관계없이 사용자를 Career Direct 한국어 페이지로 즉시 리다이렉트한다.
 
 ## 개인정보와 보안
 
@@ -57,12 +58,13 @@
 
 ## 검증 기준
 
-1. `/go/assessment?source=pdf_qr` 요청이 공식 평가 페이지로 리다이렉트된다.
+1. `/go/assessment?source=pdf_qr` 요청이 `https://careerdirect.org/?language_code=KO`로 리다이렉트된다.
 2. 요청 후 `assessment_cta_clicked` 이벤트가 `cta_location=pdf_qr`로 1건 생성된다.
 3. 대시보드 CTA 수가 1 증가하고 UTM 표에 `pdf / qr / career_direction_check`가 나타난다.
 4. 분석 DB 오류를 강제로 발생시켜도 리다이렉트가 동작한다.
 5. 새 PDF의 QR을 휴대전화로 스캔할 수 있고 QR 영역 클릭도 같은 주소로 이동한다.
 6. 새 PDF의 12개 페이지가 기존 레이아웃을 유지하며 다운로드 링크로 정상 제공된다.
+7. 랜딩페이지 평가 CTA와 후속 코칭 이메일의 평가 링크가 한국어 페이지를 연다.
 
 ## 제외 범위
 
