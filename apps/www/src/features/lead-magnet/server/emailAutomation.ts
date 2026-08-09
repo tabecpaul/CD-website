@@ -56,9 +56,27 @@ function config() {
 export async function replaceLeadEmailSchedule(leadId: number, coachingAgreed: boolean, now = new Date()) {
   await db.delete(leadMagnetEmailJobs).where(and(eq(leadMagnetEmailJobs.leadId, leadId), eq(leadMagnetEmailJobs.status, "pending")));
   const selected = schedule.filter((item) => item.kind === "delivery" || coachingAgreed);
-  await db.insert(leadMagnetEmailJobs).values(
-    selected.map(({ kind, days }) => ({ leadId, kind, scheduledAt: new Date(now.getTime() + days * 86_400_000) })),
-  ).onConflictDoNothing();
+  for (const { kind, days } of selected) {
+    await db.insert(leadMagnetEmailJobs).values({
+      leadId,
+      kind,
+      scheduledAt: new Date(now.getTime() + days * 86_400_000),
+    }).onConflictDoUpdate({
+      target: [leadMagnetEmailJobs.leadId, leadMagnetEmailJobs.kind],
+      set: {
+        scheduledAt: new Date(now.getTime() + days * 86_400_000),
+        status: "pending",
+        attempts: 0,
+        lastErrorCode: null,
+        providerMessageId: null,
+        sentAt: null,
+        deliveredAt: null,
+        bouncedAt: null,
+        complainedAt: null,
+        updatedAt: new Date(),
+      },
+    });
+  }
 }
 
 function buildMessage(kind: EmailKind, email: string, downloadToken: string, unsubscribeToken: string | null) {

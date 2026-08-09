@@ -75,7 +75,7 @@ export async function POST(request: Request) {
 
     await replaceLeadEmailSchedule(lead.id, coachingAgreed, now);
 
-    if (process.env.SES_FROM_EMAIL) {
+    if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
       await processDueEmailJobs(5);
     }
 
