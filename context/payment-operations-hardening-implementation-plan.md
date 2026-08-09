@@ -44,11 +44,20 @@ DB 마이그레이션을 Supabase에서 적용하기 전에는 신규 코드를 
 
 - 수정: `packages/db/src/schema.ts`
 - `assessmentCallbackRequests`에 `isTest boolean not null default false` 추가.
-- 운영 목록용 인덱스 `(is_test, created_at)` 추가.
+- `anonymousId varchar(64) nullable` 추가.
+- 인덱스 `(is_test, created_at)`와 `(anonymous_id, created_at)` 추가.
 - 기존 행은 모두 실제 고객으로 호환되도록 `false`로 채운다.
 - 검증: 기존 콜백 insert가 변경 없이 성공하고 신규 신청이 기본 `false`인지 확인.
 
-### Task 1.2 — 운영 이력 테이블
+### Task 1.2 — 콜백과 익명 방문 연결
+
+- 수정: `apps/www/src/app/api/assessment-callback/route.ts`.
+- 이미 읽고 있는 `visitorIdFromRequest(request)` 결과를 콜백 insert의 `anonymousId`에 저장한다.
+- 클라이언트 body에서 anonymous ID를 받지 않고 HttpOnly `cdk_vid` 쿠키만 신뢰한다.
+- 중복 신청 응답은 기존 콜백을 유지하며 ID를 임의로 덮어쓰지 않는다.
+- 검증: 정상 쿠키, 쿠키 없음, 변조된 쿠키, 중복 신청.
+
+### Task 1.3 — 운영 이력 테이블
 
 - 수정: `packages/db/src/schema.ts`
 - 추가: `callbackPaymentAuditLogs` / `callback_payment_audit_logs`.
@@ -69,7 +78,7 @@ DB 마이그레이션을 Supabase에서 적용하기 전에는 신규 코드를 
 - 수정·삭제용 API나 UI는 만들지 않는다.
 - 검증: 금액은 정수만, reason 500자 제한, PII 전용 필드 없음.
 
-### Task 1.3 — Drizzle 마이그레이션
+### Task 1.4 — Drizzle 마이그레이션
 
 - 실행: `npm run db:generate --workspace=@newland/db`.
 - 예상: `packages/db/drizzle/0008_*.sql`과 meta 갱신.
@@ -260,12 +269,14 @@ DB 마이그레이션을 Supabase에서 적용하기 전에는 신규 코드를 
 
 ### Task 6.2 — 퍼널 이벤트 경계
 
-- 콜백과 연결되지 않은 익명 방문·PDF 이벤트는 기존처럼 유지하며 화면에 이 집계 경계를 설명한다.
-- 콜백 이후 결제 전환은 결제/콜백 테이블 집계를 정본으로 사용한다.
-- 향후 이벤트 연결을 위해 이번 범위에서 analytics schema를 과도하게 변경하지 않는다.
+- 수정: `apps/www/src/features/analytics/server/dashboard.ts`의 funnel·UTM 쿼리.
+- `NOT EXISTS` 서브쿼리로 `is_test = true` 콜백의 non-null `anonymous_id`와 일치하는 analytics event를 제외한다.
+- 콜백 신청 수는 콜백 테이블의 `is_test = false` 집계를 정본으로 사용한다.
+- `anonymous_id`가 없는 과거 테스트 콜백은 익명 이벤트에서 제외하지 않는다.
+- 동일 익명 ID는 하나의 브라우저 방문 흐름이므로 해당 ID의 기간 내 이벤트 전체를 제외한다.
 - 수정: `apps/www/src/app/admin/analytics/page.tsx`.
-- `테스트 데이터 제외` 문구를 표시한다.
-- 검증: 화면 수치와 검증 SQL 일치.
+- `연결된 테스트 데이터 제외`와 과거 미연결 데이터 경계를 표시한다.
+- 검증: 테스트 flag 전후 랜딩·PDF·CTA·콜백·결제 수치, UTM 행, 과거 null ID.
 
 ---
 
@@ -283,6 +294,8 @@ DB 마이그레이션을 Supabase에서 적용하기 전에는 신규 코드를 
 ### Task 7.2 — Preview 검증 시나리오
 
 - 테스트 flag 실제↔테스트와 통계 제외.
+- 새 테스트 콜백의 anonymous ID 연결과 랜딩·PDF·CTA 전체 제외.
+- anonymous ID가 없는 과거 테스트 콜백의 익명 이벤트 보존.
 - 입금 안내/확인 중복 클릭.
 - 취소 사유와 이력.
 - 증빙 중복 저장.
