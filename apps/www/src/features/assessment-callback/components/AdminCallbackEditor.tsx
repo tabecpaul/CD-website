@@ -14,7 +14,8 @@ export default function AdminCallbackEditor({ id, initialStatus, initialNote }: 
   async function save(event: FormEvent) {
     event.preventDefault(); setBusy(true); setMessage(null);
     const response = await fetch(`/api/admin/callbacks/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status, adminNote: note }) });
-    setBusy(false); setMessage(response.ok ? "저장했습니다." : "저장하지 못했습니다.");
+    const result = await response.json() as { error?: string };
+    setBusy(false); setMessage(response.ok ? "저장했습니다." : result.error === "invalid_request" ? "상태 또는 메모 내용을 확인해 주세요." : "서버에서 저장하지 못했습니다.");
     if (response.ok) router.refresh();
   }
 
