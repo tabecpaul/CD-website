@@ -113,7 +113,7 @@ def empathy(size: tuple[int, int], name: str, story: bool = False) -> None:
     margin = 78 if story else 70
     place_logo(base, int(w * .31), (margin, margin))
     draw.text((margin, int(h * .18)), "CAREER DIRECTION CHECK", font=font(int(w * .027)), fill=TEAL)
-    headline = "왜 열심히 사는데\n진로 불안과 번아웃을\n느끼나요?"
+    headline = "왜 열심히 사는데\n진로 불안과\n번아웃을\n느끼나요?"
     y = text_block(draw, (margin, int(h * .24)), headline, font(int(w * (.062 if story else .058))), WHITE,
                    panel_w - margin * 2, spacing=int(w * .018))
     draw.text((margin, y + 18), "방향보다 자기이해가 먼저일 수 있습니다.", font=font(int(w * .027)), fill="#D8E8EE")
