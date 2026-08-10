@@ -22,7 +22,7 @@ type FunnelRow = {
   callbacks: number;
 };
 type EmailRow = { sent: number; delivered: number; bounced: number; complained: number; unsubscribed: number };
-export type UtmRow = FunnelRow & { utmSource: string; utmMedium: string; utmCampaign: string };
+export type UtmRow = FunnelRow & { utmSource: string; utmMedium: string; utmCampaign: string; utmContent: string };
 type CallbackOperationsRow = { newRequests: number; callbackCompleted: number };
 type PaymentOperationsRow = { paymentSent: number; paid: number; registered: number; assessmentCompleted: number; consultationCompleted: number; refunded: number; grossRevenue: number; refundedAmount: number };
 export type ProductPaymentRow = { productCode: string; productName: string; paymentSent: number; paid: number; consultationCompleted: number; grossRevenue: number; refundedAmount: number };
@@ -69,6 +69,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         coalesce(nullif(utm_source, ''), '(direct)') as "utmSource",
         coalesce(nullif(utm_medium, ''), '(none)') as "utmMedium",
         coalesce(nullif(utm_campaign, ''), '(none)') as "utmCampaign",
+        coalesce(nullif(utm_content, ''), '(none)') as "utmContent",
         count(distinct anonymous_id) filter (where event_name = 'landing_viewed')::int as visitors,
         count(*) filter (where event_name = 'lead_submitted')::int as leads,
         count(*) filter (where event_name = 'pdf_downloaded')::int as downloads,
@@ -84,7 +85,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
             and test_request.anonymous_id is not null
             and test_request.anonymous_id = ae.anonymous_id
         )
-      group by 1, 2, 3
+      group by 1, 2, 3, 4
       order by leads desc, visitors desc
       limit 50
     `),

@@ -23,6 +23,7 @@ export default function TrackedExternalLink({
       utmSource: params.get("utm_source"),
       utmMedium: params.get("utm_medium"),
       utmCampaign: params.get("utm_campaign"),
+      utmContent: params.get("utm_content"),
     });
     // These links open in a new tab, so the current page remains available while
     // the request completes. fetch gives us more consistent delivery than Beacon,

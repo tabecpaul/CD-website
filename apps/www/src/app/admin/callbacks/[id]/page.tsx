@@ -28,7 +28,7 @@ export default async function CallbackDetailPage({ params }: { params: Promise<{
     ["혼인 여부", optionLabel(maritalStatusOptions, request.maritalStatus)],
     ["상담 주제", request.topics.map((topic) => optionLabel(callbackTopics, topic)).join(", ")],
     ["기타 내용", request.otherTopic ?? "—"], ["마케팅 동의", request.marketingAgreed ? "동의" : "미동의"],
-    ["유입", [request.utmSource, request.utmMedium, request.utmCampaign].filter(Boolean).join(" / ") || "직접 유입"],
+    ["유입", [request.utmSource, request.utmMedium, request.utmCampaign, request.utmContent].filter(Boolean).join(" / ") || "직접 유입"],
   ];
   const scheduleStart = request.confirmedStartAt;
   const hasChangeRequest = request.scheduleStatus === "reschedule_requested";

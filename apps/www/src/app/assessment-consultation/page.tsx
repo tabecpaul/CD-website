@@ -27,6 +27,7 @@ export default async function AssessmentConsultationPage({ searchParams }: {
     utmSource: first(query.utm_source),
     utmMedium: first(query.utm_medium),
     utmCampaign: first(query.utm_campaign),
+    utmContent: first(query.utm_content),
   };
   const benefits = [
     ["검사 적합성", "현재 고민에 Career Direct 검사가 적합한지 함께 확인합니다."],

@@ -29,6 +29,7 @@ export type Attribution = {
   utmSource?: string | null;
   utmMedium?: string | null;
   utmCampaign?: string | null;
+  utmContent?: string | null;
 };
 
 const serverOnlyEventNames = new Set<AnalyticsEventName>([
@@ -75,6 +76,7 @@ export function parsePublicEvent(value: unknown) {
     utmSource: limited(body.utmSource, 128),
     utmMedium: limited(body.utmMedium, 128),
     utmCampaign: limited(body.utmCampaign, 128),
+    utmContent: limited(body.utmContent, 128),
   };
 }
 
@@ -92,7 +94,7 @@ export async function firstAttribution(anonymousId: string | null): Promise<Attr
   const event = await db.query.analyticsEvents.findFirst({
     where: and(eq(analyticsEvents.anonymousId, anonymousId), eq(analyticsEvents.eventName, "landing_viewed")),
     orderBy: [asc(analyticsEvents.occurredAt)],
-    columns: { utmSource: true, utmMedium: true, utmCampaign: true },
+    columns: { utmSource: true, utmMedium: true, utmCampaign: true, utmContent: true },
   });
   return event ?? {};
 }
@@ -106,7 +108,7 @@ export async function recordAnalyticsEvent(input: {
   utm?: Attribution;
   productCode?: string | null;
 }) {
-  const fallback = input.utm?.utmSource || input.utm?.utmMedium || input.utm?.utmCampaign
+  const fallback = input.utm?.utmSource || input.utm?.utmMedium || input.utm?.utmCampaign || input.utm?.utmContent
     ? {} : await firstAttribution(input.anonymousId ?? null);
   await db.insert(analyticsEvents).values({
     eventId: input.eventId ?? randomUUID(),
@@ -118,6 +120,7 @@ export async function recordAnalyticsEvent(input: {
     utmSource: input.utm?.utmSource ?? fallback.utmSource ?? null,
     utmMedium: input.utm?.utmMedium ?? fallback.utmMedium ?? null,
     utmCampaign: input.utm?.utmCampaign ?? fallback.utmCampaign ?? null,
+    utmContent: input.utm?.utmContent ?? fallback.utmContent ?? null,
     productCode: input.productCode ?? null,
   }).onConflictDoNothing();
 }

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
 
   const lead = await db.query.leadMagnetLeads.findFirst({
     where: eq(leadMagnetLeads.downloadToken, token),
-    columns: { downloadExpiresAt: true, utmSource: true, utmMedium: true, utmCampaign: true },
+    columns: { downloadExpiresAt: true, utmSource: true, utmMedium: true, utmCampaign: true, utmContent: true },
   });
 
   if (!lead || lead.downloadExpiresAt.getTime() < Date.now()) {
