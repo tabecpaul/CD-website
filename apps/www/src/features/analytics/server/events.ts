@@ -4,6 +4,7 @@ import { analyticsEvents, db } from "@newland/db";
 
 export const analyticsEventNames = [
   "landing_viewed",
+  "official_page_viewed",
   "lead_submitted",
   "pdf_downloaded",
   "assessment_cta_clicked",
@@ -86,7 +87,8 @@ export function validVisitorId(value: string | undefined) {
 
 export function visitorIdFromRequest(request: Request) {
   const cookieHeader = request.headers.get("cookie") ?? "";
-  return validVisitorId(cookieHeader.match(/(?:^|;\s*)cdk_vid=([^;]+)/)?.[1]);
+  const shared = validVisitorId(cookieHeader.match(/(?:^|;\s*)cdk_vid_shared=([^;]+)/)?.[1]);
+  return shared ?? validVisitorId(cookieHeader.match(/(?:^|;\s*)cdk_vid=([^;]+)/)?.[1]);
 }
 
 export async function firstAttribution(anonymousId: string | null): Promise<Attribution> {
