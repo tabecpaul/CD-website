@@ -22,3 +22,10 @@ Constraints: no visible company logo, no religious symbol, no text, no watermark
 ```
 
 한글 제목, 로고, CTA는 이미지 생성 모델에 맡기지 않고 `source/generate-creatives.py`에서 정확하게 합성한다.
+
+## Canva 최종 피드
+
+- `canva-final-meta-feed-empathy-a.png`: 사용자가 Canva에서 최종 편집한 공감 인물형 A
+- `canva-final-meta-feed-typography-b.png`: 사용자가 Canva에서 최종 편집한 타이포형 B
+
+두 파일이 존재하면 `source/generate-creatives.py`는 코드 생성 초안 대신 Canva 최종본을 `creative/png`와 `creative/jpg`에 export한다. 따라서 전체 소재를 재생성해도 승인된 피드가 초안으로 되돌아가지 않는다.

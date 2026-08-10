@@ -21,6 +21,8 @@ FONT = "/System/Library/Fonts/Supplemental/AppleGothic.ttf"
 PHOTO = SOURCE / "empathy-young-professional-v1.png"
 LOGO = REPO / "apps" / "www" / "public" / "career-direct-logo.png"
 WORKBOOK = REPO / "apps" / "www" / "public" / "images" / "career-check" / "page-01.png"
+CANVA_FEED_A = SOURCE / "canva-final-meta-feed-empathy-a.png"
+CANVA_FEED_B = SOURCE / "canva-final-meta-feed-typography-b.png"
 
 CREAM = "#F5F0E7"
 NAVY = "#193B59"
@@ -220,8 +222,14 @@ def poster(channel: str, title: str, body: str, qr_name: str) -> None:
 def main() -> None:
     for directory in (PNG, JPG, PDF):
         directory.mkdir(parents=True, exist_ok=True)
-    empathy((1080, 1080), "meta-feed-empathy-a")
-    typography((1080, 1080), "meta-feed-typography-b")
+    if CANVA_FEED_A.exists():
+        save(Image.open(CANVA_FEED_A).convert("RGBA"), "meta-feed-empathy-a")
+    else:
+        empathy((1080, 1080), "meta-feed-empathy-a")
+    if CANVA_FEED_B.exists():
+        save(Image.open(CANVA_FEED_B).convert("RGBA"), "meta-feed-typography-b")
+    else:
+        typography((1080, 1080), "meta-feed-typography-b")
     empathy((1080, 1920), "meta-story-empathy-a", story=True)
     typography((1080, 1920), "meta-story-typography-b", story=True)
     typography((1080, 1350), "threads-typography-a")
