@@ -10,6 +10,8 @@ import AdminCallbackScheduleEditor from "@/features/assessment-callback/componen
 import AdminTestStatusEditor from "@/features/assessment-callback/components/AdminTestStatusEditor";
 import { formatKoreaDateInput, formatKoreaDateTime, formatKoreaTimeInput } from "@/features/assessment-callback/server/scheduleTime";
 import AdminPaymentEditor from "@/features/callback-payment/components/AdminPaymentEditor";
+import PaymentAuditTimeline from "@/features/callback-payment/components/PaymentAuditTimeline";
+import { listPaymentAuditLogs } from "@/features/callback-payment/server/audit";
 
 export const metadata: Metadata = { title: "콜백 신청 상세 | Career Direct Korea", robots: { index: false, follow: false } };
 
@@ -17,7 +19,7 @@ export default async function CallbackDetailPage({ params }: { params: Promise<{
   if (!(await hasAdminSession())) redirect("/admin/login");
   const request = await getCallbackRequest(Number((await params).id));
   if (!request) notFound();
-  const payments = await getCallbackPayments(request.id);
+  const [payments, auditLogs] = await Promise.all([getCallbackPayments(request.id), listPaymentAuditLogs(request.id)]);
   const activePayment = payments.find((payment) => payment.isActive) ?? null;
   const rows = [
     ["이름", request.name], ["휴대전화", request.phone], ["이메일", request.email],
@@ -46,11 +48,12 @@ export default async function CallbackDetailPage({ params }: { params: Promise<{
         </div>
         <div className="space-y-6">
           <AdminTestStatusEditor id={request.id} initialIsTest={request.isTest} hasAnonymousId={Boolean(request.anonymousId)} />
-          <AdminPaymentEditor callbackId={request.id} payment={paymentProp} />
+          <AdminPaymentEditor callbackId={request.id} payment={paymentProp} isTest={request.isTest} />
           <AdminCallbackScheduleEditor id={request.id} initialDate={initialDate} initialTime={initialTime} scheduleStatus={request.scheduleStatus} scheduleStatusLabel={scheduleStatusLabels[request.scheduleStatus as keyof typeof scheduleStatusLabels] ?? request.scheduleStatus} confirmationEmailStatus={request.confirmationEmailStatus} reminderSent={Boolean(request.reminderEmailSentAt)} hasChangeRequest={hasChangeRequest} />
           <AdminCallbackEditor id={request.id} initialStatus={request.status} initialNote={request.adminNote} />
         </div>
       </div>
+      <PaymentAuditTimeline logs={auditLogs} />
     </div>
   </main>;
 }

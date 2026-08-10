@@ -45,7 +45,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         count(*) filter (where event_name = 'assessment_cta_clicked')::int as "ctaClicks",
         count(*) filter (where event_name = 'consultation_submitted')::int as consultations,
         count(*) filter (where event_name = 'callback_cta_clicked')::int as "callbackClicks",
-        count(*) filter (where event_name = 'callback_submitted')::int as callbacks
+        (select count(*)::int from assessment_callback_requests callback where callback.created_at >= ${startIso}::timestamptz and callback.is_test = false) as callbacks
       from analytics_events ae
       where occurred_at >= ${startIso}::timestamptz
         and not exists (

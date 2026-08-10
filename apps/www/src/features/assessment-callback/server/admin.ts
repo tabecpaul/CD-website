@@ -1,15 +1,34 @@
-import { desc, eq } from "drizzle-orm";
-import { assessmentCallbackRequests, callbackPaymentAuditLogs, db } from "@newland/db";
+import { and, desc, eq, inArray } from "drizzle-orm";
+import { assessmentCallbackPayments, assessmentCallbackRequests, callbackPaymentAuditLogs, db } from "@newland/db";
 import { auditValues } from "@/features/callback-payment/server/audit";
 import { callbackStatuses, type CallbackStatus } from "../domain";
 import { sendAdminCallbackEmail, sendCustomerCallbackEmail } from "./emails";
 
-export async function listCallbackRequests(status?: string) {
+export const callbackOperationFilters = ["real", "test", "overdue", "email_failed", "evidence_needed", "refund_pending"] as const;
+export type CallbackOperationFilter = (typeof callbackOperationFilters)[number];
+
+export async function listCallbackRequests(status?: string, operation?: string) {
   const safeStatus = callbackStatuses.includes(status as CallbackStatus) ? status : undefined;
-  return db.query.assessmentCallbackRequests.findMany({
+  const safeOperation = callbackOperationFilters.includes(operation as CallbackOperationFilter) ? operation as CallbackOperationFilter : undefined;
+  const callbacks = await db.query.assessmentCallbackRequests.findMany({
     where: safeStatus ? eq(assessmentCallbackRequests.status, safeStatus) : undefined,
     orderBy: [desc(assessmentCallbackRequests.createdAt)],
     limit: 100,
+  });
+  const payments = callbacks.length ? await db.query.assessmentCallbackPayments.findMany({
+    where: and(inArray(assessmentCallbackPayments.callbackRequestId, callbacks.map((item) => item.id)), eq(assessmentCallbackPayments.isActive, true)),
+  }) : [];
+  const byCallback = new Map(payments.map((payment) => [payment.callbackRequestId, payment]));
+  const now = Date.now();
+  return callbacks.map((callback) => ({ ...callback, activePayment: byCallback.get(callback.id) ?? null })).filter(({ isTest, activePayment }) => {
+    if (!safeOperation) return true;
+    if (safeOperation === "real") return !isTest;
+    if (safeOperation === "test") return isTest;
+    if (!activePayment) return false;
+    if (safeOperation === "overdue") return activePayment.paymentStatus === "awaiting_payment" && Boolean(activePayment.paymentDueAt && activePayment.paymentDueAt.getTime() < now);
+    if (safeOperation === "email_failed") return [activePayment.instructionEmailStatus, activePayment.confirmationEmailStatus, activePayment.refundRequestEmailStatus, activePayment.refundCompletedEmailStatus].includes("failed");
+    if (safeOperation === "evidence_needed") return activePayment.evidenceStatus === "requested";
+    return activePayment.paymentStatus === "refund_pending";
   });
 }
 
@@ -42,7 +61,7 @@ export async function setCallbackTestStatus(id: number, input: { isTest: unknown
   if (typeof input.isTest !== "boolean") throw new Error("CALLBACK_UPDATE_INVALID");
   const isTest = input.isTest;
   const reason = typeof input.reason === "string" ? input.reason.trim() : "";
-  if (reason.length > 500) throw new Error("CALLBACK_UPDATE_INVALID");
+  if (!reason || reason.length > 500) throw new Error("CALLBACK_UPDATE_INVALID");
   return db.transaction(async (tx) => {
     const current = await tx.query.assessmentCallbackRequests.findFirst({ where: eq(assessmentCallbackRequests.id, id) });
     if (!current) return null;

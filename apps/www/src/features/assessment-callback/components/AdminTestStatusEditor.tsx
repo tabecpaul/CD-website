@@ -12,9 +12,11 @@ export default function AdminTestStatusEditor({ id, initialIsTest, hasAnonymousI
     const next = !isTest;
     const warning = next ? hasAnonymousId ? "같은 브라우저에서 발생한 방문·PDF·CTA·결제 데이터를 모두 분석에서 제외합니다. 계속할까요?" : "콜백·결제 이후 데이터만 분석에서 제외합니다. 이전 익명 방문은 연결 정보가 없어 유지됩니다. 계속할까요?" : "이 신청을 실제 고객 데이터로 되돌립니다. 계속할까요?";
     if (!window.confirm(warning)) return;
+    const reason = window.prompt(next ? "테스트로 분류하는 사유를 입력하세요." : "실제 고객으로 복원하는 사유를 입력하세요.")?.trim();
+    if (!reason) return;
     setBusy(true); setMessage("");
     try {
-      const response = await fetch(`/api/admin/callbacks/${id}/test-status`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ isTest: next, reason: next ? "관리자 테스트 신청 표시" : "관리자 실제 신청 복원" }) });
+      const response = await fetch(`/api/admin/callbacks/${id}/test-status`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ isTest: next, reason }) });
       if (!response.ok) throw new Error("save_failed");
       setIsTest(next); setMessage(next ? "테스트 데이터로 표시했습니다." : "실제 고객 데이터로 복원했습니다."); router.refresh();
     } catch { setMessage("저장하지 못했습니다."); } finally { setBusy(false); }
