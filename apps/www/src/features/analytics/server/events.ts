@@ -5,6 +5,7 @@ import { analyticsEvents, db } from "@newland/db";
 export const analyticsEventNames = [
   "landing_viewed",
   "official_page_viewed",
+  "organization_inquiry_submitted",
   "lead_submitted",
   "pdf_downloaded",
   "assessment_cta_clicked",
@@ -45,6 +46,7 @@ const serverOnlyEventNames = new Set<AnalyticsEventName>([
   "assessment_completed",
   "consultation_completed",
   "payment_refunded",
+  "organization_inquiry_submitted",
 ]);
 
 const EVENT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
