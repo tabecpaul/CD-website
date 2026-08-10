@@ -3,6 +3,7 @@ import {
   OFFICIAL_SITE_URL,
   START_SITE_URL,
   isOfficialHost,
+  isOfficialSitePreview,
   isStartHost,
 } from "@/features/site-routing/hosts";
 import {
@@ -22,7 +23,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(publicPath, OFFICIAL_SITE_URL), 308);
   }
 
-  if (isOfficialHost(host) || developmentOfficial) {
+  if (isOfficialHost(host) || isOfficialSitePreview() || developmentOfficial) {
     if (isStartOwnedPath(pathname)) {
       return NextResponse.redirect(
         new URL(`${pathname}${request.nextUrl.search}`, START_SITE_URL),
