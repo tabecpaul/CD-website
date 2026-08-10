@@ -6,6 +6,8 @@ import { callbackOperationFilters, listCallbackRequests } from "@/features/asses
 import { callbackStatuses, callbackStatusLabels, callbackTopics, optionLabel, scheduleStatusLabels, timeSlots } from "@/features/assessment-callback/domain";
 import { formatKoreaDateTime } from "@/features/assessment-callback/server/scheduleTime";
 import { paymentStatusLabels, serviceStatusLabels, type PaymentStatus, type ServiceStatus } from "@/features/callback-payment/domain";
+import OperationsStatusPanel from "@/features/operations-monitor/components/OperationsStatusPanel";
+import { getOperationsAdminStatus } from "@/features/operations-monitor/server/admin";
 
 export const metadata: Metadata = { title: "검사 콜백 관리 | Career Direct Korea", robots: { index: false, follow: false } };
 
@@ -15,12 +17,13 @@ const SERVER_LOADED_AT = Date.now();
 export default async function AdminCallbacksPage({ searchParams }: { searchParams: Promise<{ status?: string; operation?: string }> }) {
   if (!(await hasAdminSession())) redirect("/admin/login");
   const query = await searchParams;
-  const requests = await listCallbackRequests(query.status, query.operation);
+  const [requests, operationsStatus] = await Promise.all([listCallbackRequests(query.status, query.operation), getOperationsAdminStatus()]);
   const newCount = requests.filter((request) => request.status === "new").length;
   const href = (status?: string, operation?: string) => `/admin/callbacks?${new URLSearchParams({ ...(status ? { status } : {}), ...(operation ? { operation } : {}) })}`;
 
   return <main className="min-h-screen bg-cream px-5 py-10 text-navy sm:px-8 sm:py-14"><div className="mx-auto max-w-7xl">
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-black tracking-[.16em] text-teal">CAREER DIRECT KOREA</p><h1 className="mt-2 text-3xl font-black sm:text-4xl">검사 콜백 관리</h1><p className="mt-2 text-sm text-navy/55">현재 조건 신규 신청 {newCount}건 · 최근 100건</p></div><Link href="/admin/analytics" className="text-sm font-bold text-teal underline">전환 분석 보기</Link></header>
+    <OperationsStatusPanel snapshot={operationsStatus.snapshot} latestStatus={operationsStatus.latestStatus} latestSuccessAt={operationsStatus.latestSuccessAt} stale={operationsStatus.stale} />
     <p className="mt-7 text-xs font-black tracking-[.12em] text-navy/45">영업 상태</p>
     <nav className="mt-2 flex flex-wrap gap-2"><Link href={href(undefined, query.operation)} className={`rounded-full px-4 py-2 text-sm font-bold ${!query.status ? "bg-navy text-white" : "bg-white"}`}>전체</Link>{callbackStatuses.map((status) => <Link key={status} href={href(status, query.operation)} className={`rounded-full px-4 py-2 text-sm font-bold ${query.status === status ? "bg-navy text-white" : "bg-white"}`}>{callbackStatusLabels[status]}</Link>)}</nav>
     <p className="mt-5 text-xs font-black tracking-[.12em] text-navy/45">운영 필터</p>

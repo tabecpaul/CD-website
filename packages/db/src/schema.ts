@@ -3,6 +3,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
   serial,
   text,
@@ -307,5 +308,43 @@ export const callbackPaymentAuditLogs = pgTable(
     index("callback_payment_audit_callback_created_idx").on(table.callbackRequestId, table.createdAt),
     index("callback_payment_audit_payment_created_idx").on(table.paymentId, table.createdAt),
     index("callback_payment_audit_action_created_idx").on(table.action, table.createdAt),
+  ],
+);
+
+export const systemJobRuns = pgTable(
+  "system_job_runs",
+  {
+    id: serial("id").primaryKey(),
+    jobName: varchar("job_name", { length: 64 }).notNull(),
+    startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    status: varchar("status", { length: 16 }).notNull().default("running"),
+    summary: jsonb("summary").$type<Record<string, number | string | null>>(),
+    errorCode: varchar("error_code", { length: 80 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("system_job_runs_name_started_idx").on(table.jobName, table.startedAt),
+    index("system_job_runs_status_started_idx").on(table.status, table.startedAt),
+  ],
+);
+
+export const operationsAlertDeliveries = pgTable(
+  "operations_alert_deliveries",
+  {
+    id: serial("id").primaryKey(),
+    alertDate: date("alert_date", { mode: "string" }).notNull(),
+    fingerprint: varchar("fingerprint", { length: 64 }).notNull(),
+    status: varchar("status", { length: 16 }).notNull().default("sending"),
+    issueCount: integer("issue_count").notNull(),
+    providerMessageId: varchar("provider_message_id", { length: 128 }),
+    errorCode: varchar("error_code", { length: 80 }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("operations_alert_date_fingerprint_unique").on(table.alertDate, table.fingerprint),
+    index("operations_alert_status_created_idx").on(table.status, table.createdAt),
   ],
 );
