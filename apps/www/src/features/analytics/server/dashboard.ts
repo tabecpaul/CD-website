@@ -26,6 +26,7 @@ export type UtmRow = FunnelRow & { utmSource: string; utmMedium: string; utmCamp
 type CallbackOperationsRow = { newRequests: number; callbackCompleted: number };
 type PaymentOperationsRow = { paymentSent: number; paid: number; registered: number; assessmentCompleted: number; consultationCompleted: number; refunded: number; grossRevenue: number; refundedAmount: number };
 export type ProductPaymentRow = { productCode: string; productName: string; paymentSent: number; paid: number; consultationCompleted: number; grossRevenue: number; refundedAmount: number };
+export type BlogPerformanceRow = { path: string; views: number; readers: number; cardEngagements: number; relatedClicks: number; selfCheckClicks: number; callbackClicks: number };
 
 function numeric<T extends Record<string, unknown>>(row: T) {
   return Object.fromEntries(Object.entries(row).map(([key, value]) => [key, typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value])) as T;
@@ -36,7 +37,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
   // Raw postgres.js queries do not serialize Date instances in every runtime.
   // Pass an ISO string and cast it explicitly so Vercel and local builds behave alike.
   const startIso = start.toISOString();
-  const [funnelResult, emailResult, unsubscribedResult, utmResult, callbackOperationsResult, paymentOperationsResult, productPaymentsResult] = await Promise.all([
+  const [funnelResult, emailResult, unsubscribedResult, utmResult, callbackOperationsResult, paymentOperationsResult, productPaymentsResult, blogPerformanceResult] = await Promise.all([
     db.execute(sql`
       select
         count(distinct anonymous_id) filter (where event_name = 'landing_viewed')::int as visitors,
@@ -122,6 +123,26 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
       where callback.is_test = false
       group by product_code, product_name order by paid desc
     `),
+    db.execute(sql`
+      select path,
+        count(*) filter (where event_name = 'blog_article_viewed')::int as views,
+        count(distinct anonymous_id) filter (where event_name = 'blog_article_viewed')::int as readers,
+        count(*) filter (where event_name = 'blog_card_engaged')::int as "cardEngagements",
+        count(*) filter (where event_name = 'blog_related_clicked')::int as "relatedClicks",
+        count(*) filter (where event_name = 'official_site_clicked')::int as "selfCheckClicks",
+        count(*) filter (where event_name = 'callback_cta_clicked')::int as "callbackClicks"
+      from analytics_events ae
+      where occurred_at >= ${startIso}::timestamptz
+        and path like '/blog/%'
+        and not exists (
+          select 1 from assessment_callback_requests test_request
+          where test_request.is_test = true
+            and test_request.anonymous_id is not null
+            and test_request.anonymous_id = ae.anonymous_id
+        )
+      group by path order by views desc, path asc
+      limit 50
+    `),
   ]);
   const funnel = numeric((funnelResult[0] ?? {}) as FunnelRow);
   const rawEmail = numeric((emailResult[0] ?? {}) as Omit<EmailRow, "unsubscribed">);
@@ -143,6 +164,7 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
       grossRevenue: paymentOperations.grossRevenue ?? 0, refundedAmount: paymentOperations.refundedAmount ?? 0,
     },
     productPayments: productPaymentsResult.map((row) => numeric(row as ProductPaymentRow)),
+    blogPerformance: blogPerformanceResult.map((row) => numeric(row as BlogPerformanceRow)),
     utm: utmResult.map((row) => numeric(row as UtmRow)),
   };
 }

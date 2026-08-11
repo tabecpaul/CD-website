@@ -16,7 +16,9 @@ export const startOwnedPrefixes = [
 ] as const;
 
 export function isOfficialPublicPath(pathname: string) {
-  return officialPublicPaths.includes(pathname as (typeof officialPublicPaths)[number]);
+  return officialPublicPaths.includes(pathname as (typeof officialPublicPaths)[number])
+    || pathname === "/blog"
+    || pathname.startsWith("/blog/");
 }
 
 export function isStartOwnedPath(pathname: string) {

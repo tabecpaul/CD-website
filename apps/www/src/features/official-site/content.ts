@@ -6,6 +6,7 @@ export const navigation = [
   { href: "/pricing", label: "비용·절차" },
   { href: "/organizations", label: "교회·대학·기관" },
   { href: "/consultant", label: "컨설턴트 소개" },
+  { href: "/blog", label: "블로그" },
 ] as const;
 
 export const ctas = {
