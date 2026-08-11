@@ -60,7 +60,7 @@ export default function ConsultantPage() {
                 className="h-full w-full object-cover"
               />
             </div>
-            <p className="mt-5 text-center text-sm font-bold text-white/65">박정열 · Jung-yull Park</p>
+            <p className="mt-5 text-center text-sm font-bold text-white/65">박정열 · Paul J. Park</p>
           </div>
 
           <div>
