@@ -5,6 +5,9 @@ import { analyticsEvents, db } from "@newland/db";
 export const analyticsEventNames = [
   "landing_viewed",
   "official_page_viewed",
+  "blog_article_viewed",
+  "blog_card_engaged",
+  "blog_related_clicked",
   "organization_inquiry_submitted",
   "lead_submitted",
   "pdf_downloaded",
