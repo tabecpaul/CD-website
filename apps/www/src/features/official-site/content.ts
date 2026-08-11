@@ -26,6 +26,11 @@ export const prices = {
   adult: { name: "성인 통합 패키지", age: "만 29세 이상", total: "495,000원" },
 } as const;
 
+export const brand = {
+  tagline: "Discover Your Design. Discern Your Calling. Drive Your Journey.",
+  taglineKo: "나의 디자인을 발견하고, 부르심을 분별하며, 나만의 여정을 주도하세요.",
+} as const;
+
 export const site = {
   name: "Career Direct Korea",
   url: OFFICIAL_SITE_URL,
