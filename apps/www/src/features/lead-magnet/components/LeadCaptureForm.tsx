@@ -30,6 +30,7 @@ export default function LeadCaptureForm({ compact = false }: { compact?: boolean
           utmSource: params.get("utm_source"),
           utmMedium: params.get("utm_medium"),
           utmCampaign: params.get("utm_campaign"),
+          utmContent: params.get("utm_content"),
         }),
       });
       const result = (await response.json()) as { error?: string; token?: string };

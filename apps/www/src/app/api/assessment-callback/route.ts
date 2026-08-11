@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   try {
     const anonymousId = visitorIdFromRequest(request);
-    const fallbackAttribution = input.utmSource || input.utmMedium || input.utmCampaign
+    const fallbackAttribution = input.utmSource || input.utmMedium || input.utmCampaign || input.utmContent
       ? {}
       : await firstAttribution(anonymousId);
     const attributedInput = {
@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       utmSource: input.utmSource ?? fallbackAttribution.utmSource ?? null,
       utmMedium: input.utmMedium ?? fallbackAttribution.utmMedium ?? null,
       utmCampaign: input.utmCampaign ?? fallbackAttribution.utmCampaign ?? null,
+      utmContent: input.utmContent ?? fallbackAttribution.utmContent ?? null,
     };
     const duplicateSince = new Date(Date.now() - 10 * 60_000);
     const duplicate = await db.query.assessmentCallbackRequests.findFirst({
@@ -52,6 +53,7 @@ export async function POST(request: Request) {
 
     const [created] = await db.insert(assessmentCallbackRequests).values({
       ...attributedInput,
+      anonymousId,
       consentVersion: CALLBACK_CONSENT_VERSION,
     }).returning({ id: assessmentCallbackRequests.id });
 

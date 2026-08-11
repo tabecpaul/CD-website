@@ -49,6 +49,7 @@ export async function POST(request: Request) {
         utmSource: clean(body.utmSource, 128),
         utmMedium: clean(body.utmMedium, 128),
         utmCampaign: clean(body.utmCampaign, 128),
+        utmContent: clean(body.utmContent, 128),
         downloadToken: token,
         downloadExpiresAt: expiresAt,
         unsubscribeToken,
@@ -64,6 +65,7 @@ export async function POST(request: Request) {
           utmSource: clean(body.utmSource, 128),
           utmMedium: clean(body.utmMedium, 128),
           utmCampaign: clean(body.utmCampaign, 128),
+          utmContent: clean(body.utmContent, 128),
           downloadToken: token,
           downloadExpiresAt: expiresAt,
           unsubscribeToken,
@@ -84,6 +86,7 @@ export async function POST(request: Request) {
         utmSource: clean(body.utmSource, 128),
         utmMedium: clean(body.utmMedium, 128),
         utmCampaign: clean(body.utmCampaign, 128),
+        utmContent: clean(body.utmContent, 128),
       },
     });
 

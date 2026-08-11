@@ -79,6 +79,7 @@ export function parseCallbackSubmission(value: unknown) {
     utmSource: limited(body.utmSource, 128, true),
     utmMedium: limited(body.utmMedium, 128, true),
     utmCampaign: limited(body.utmCampaign, 128, true),
+    utmContent: limited(body.utmContent, 128, true),
   };
 }
 

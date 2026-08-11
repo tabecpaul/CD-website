@@ -1,10 +1,8 @@
 name: Database Migration
 
+# Production migrations are reviewed and applied manually in Supabase.
+# Keep this workflow manual-only to avoid replaying migrations already applied there.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "packages/db/drizzle/**"
   workflow_dispatch: {}
 
 jobs:

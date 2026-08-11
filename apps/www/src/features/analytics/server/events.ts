@@ -4,6 +4,8 @@ import { analyticsEvents, db } from "@newland/db";
 
 export const analyticsEventNames = [
   "landing_viewed",
+  "official_page_viewed",
+  "organization_inquiry_submitted",
   "lead_submitted",
   "pdf_downloaded",
   "assessment_cta_clicked",
@@ -11,6 +13,17 @@ export const analyticsEventNames = [
   "callback_submitted",
   "official_site_clicked",
   "consultation_submitted",
+  "callback_schedule_confirmed",
+  "callback_reschedule_requested",
+  "callback_schedule_reconfirmed",
+  "callback_reminder_sent",
+  "payment_instruction_sent",
+  "payment_confirmed",
+  "assessment_link_issued",
+  "assessment_registered",
+  "assessment_completed",
+  "consultation_completed",
+  "payment_refunded",
 ] as const;
 
 export type AnalyticsEventName = (typeof analyticsEventNames)[number];
@@ -18,7 +31,23 @@ export type Attribution = {
   utmSource?: string | null;
   utmMedium?: string | null;
   utmCampaign?: string | null;
+  utmContent?: string | null;
 };
+
+const serverOnlyEventNames = new Set<AnalyticsEventName>([
+  "callback_schedule_confirmed",
+  "callback_reschedule_requested",
+  "callback_schedule_reconfirmed",
+  "callback_reminder_sent",
+  "payment_instruction_sent",
+  "payment_confirmed",
+  "assessment_link_issued",
+  "assessment_registered",
+  "assessment_completed",
+  "consultation_completed",
+  "payment_refunded",
+  "organization_inquiry_submitted",
+]);
 
 const EVENT_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VISITOR_ID = /^[0-9a-f-]{36}$/i;
@@ -39,6 +68,7 @@ export function parsePublicEvent(value: unknown) {
   if (typeof body.eventName !== "string" || !analyticsEventNames.includes(body.eventName as AnalyticsEventName)) {
     throw new Error("ANALYTICS_EVENT_NAME_INVALID");
   }
+  if (serverOnlyEventNames.has(body.eventName as AnalyticsEventName)) throw new Error("ANALYTICS_EVENT_NAME_INVALID");
   const path = limited(body.path, 160);
   if (path && !path.startsWith("/")) throw new Error("ANALYTICS_PATH_INVALID");
   return {
@@ -49,6 +79,7 @@ export function parsePublicEvent(value: unknown) {
     utmSource: limited(body.utmSource, 128),
     utmMedium: limited(body.utmMedium, 128),
     utmCampaign: limited(body.utmCampaign, 128),
+    utmContent: limited(body.utmContent, 128),
   };
 }
 
@@ -58,7 +89,8 @@ export function validVisitorId(value: string | undefined) {
 
 export function visitorIdFromRequest(request: Request) {
   const cookieHeader = request.headers.get("cookie") ?? "";
-  return validVisitorId(cookieHeader.match(/(?:^|;\s*)cdk_vid=([^;]+)/)?.[1]);
+  const shared = validVisitorId(cookieHeader.match(/(?:^|;\s*)cdk_vid_shared=([^;]+)/)?.[1]);
+  return shared ?? validVisitorId(cookieHeader.match(/(?:^|;\s*)cdk_vid=([^;]+)/)?.[1]);
 }
 
 export async function firstAttribution(anonymousId: string | null): Promise<Attribution> {
@@ -66,7 +98,7 @@ export async function firstAttribution(anonymousId: string | null): Promise<Attr
   const event = await db.query.analyticsEvents.findFirst({
     where: and(eq(analyticsEvents.anonymousId, anonymousId), eq(analyticsEvents.eventName, "landing_viewed")),
     orderBy: [asc(analyticsEvents.occurredAt)],
-    columns: { utmSource: true, utmMedium: true, utmCampaign: true },
+    columns: { utmSource: true, utmMedium: true, utmCampaign: true, utmContent: true },
   });
   return event ?? {};
 }
@@ -78,8 +110,9 @@ export async function recordAnalyticsEvent(input: {
   path?: string | null;
   ctaLocation?: string | null;
   utm?: Attribution;
+  productCode?: string | null;
 }) {
-  const fallback = input.utm?.utmSource || input.utm?.utmMedium || input.utm?.utmCampaign
+  const fallback = input.utm?.utmSource || input.utm?.utmMedium || input.utm?.utmCampaign || input.utm?.utmContent
     ? {} : await firstAttribution(input.anonymousId ?? null);
   await db.insert(analyticsEvents).values({
     eventId: input.eventId ?? randomUUID(),
@@ -91,6 +124,8 @@ export async function recordAnalyticsEvent(input: {
     utmSource: input.utm?.utmSource ?? fallback.utmSource ?? null,
     utmMedium: input.utm?.utmMedium ?? fallback.utmMedium ?? null,
     utmCampaign: input.utm?.utmCampaign ?? fallback.utmCampaign ?? null,
+    utmContent: input.utm?.utmContent ?? fallback.utmContent ?? null,
+    productCode: input.productCode ?? null,
   }).onConflictDoNothing();
 }
 
