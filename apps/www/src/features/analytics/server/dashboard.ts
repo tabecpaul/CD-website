@@ -26,7 +26,8 @@ export type UtmRow = FunnelRow & { utmSource: string; utmMedium: string; utmCamp
 type CallbackOperationsRow = { newRequests: number; callbackCompleted: number };
 type PaymentOperationsRow = { paymentSent: number; paid: number; registered: number; assessmentCompleted: number; consultationCompleted: number; refunded: number; grossRevenue: number; refundedAmount: number };
 export type ProductPaymentRow = { productCode: string; productName: string; paymentSent: number; paid: number; consultationCompleted: number; grossRevenue: number; refundedAmount: number };
-export type BlogPerformanceRow = { path: string; views: number; readers: number; cardEngagements: number; relatedClicks: number; selfCheckClicks: number; callbackClicks: number };
+export type BlogPerformanceRow = { path: string; views: number; readers: number; totalReaders: number; cardEngagements: number; relatedClicks: number; selfCheckClicks: number; callbackClicks: number };
+export type BlogSummary = { views: number; readers: number; selfCheckClicks: number; callbackClicks: number };
 
 function numeric<T extends Record<string, unknown>>(row: T) {
   return Object.fromEntries(Object.entries(row).map(([key, value]) => [key, typeof value === "string" && /^\d+$/.test(value) ? Number(value) : value])) as T;
@@ -71,7 +72,9 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
         coalesce(nullif(utm_medium, ''), '(none)') as "utmMedium",
         coalesce(nullif(utm_campaign, ''), '(none)') as "utmCampaign",
         coalesce(nullif(utm_content, ''), '(none)') as "utmContent",
-        count(distinct anonymous_id) filter (where event_name = 'landing_viewed')::int as visitors,
+        count(distinct anonymous_id) filter (
+          where event_name in ('landing_viewed', 'official_page_viewed', 'blog_article_viewed')
+        )::int as visitors,
         count(*) filter (where event_name = 'lead_submitted')::int as leads,
         count(*) filter (where event_name = 'pdf_downloaded')::int as downloads,
         count(*) filter (where event_name = 'assessment_cta_clicked')::int as "ctaClicks",
@@ -124,22 +127,26 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
       group by product_code, product_name order by paid desc
     `),
     db.execute(sql`
+      with blog_events as (
+        select * from analytics_events ae
+        where occurred_at >= ${startIso}::timestamptz
+          and path like '/blog/%'
+          and not exists (
+            select 1 from assessment_callback_requests test_request
+            where test_request.is_test = true
+              and test_request.anonymous_id is not null
+              and test_request.anonymous_id = ae.anonymous_id
+          )
+      )
       select path,
         count(*) filter (where event_name = 'blog_article_viewed')::int as views,
         count(distinct anonymous_id) filter (where event_name = 'blog_article_viewed')::int as readers,
+        (select count(distinct anonymous_id)::int from blog_events where event_name = 'blog_article_viewed') as "totalReaders",
         count(*) filter (where event_name = 'blog_card_engaged')::int as "cardEngagements",
         count(*) filter (where event_name = 'blog_related_clicked')::int as "relatedClicks",
         count(*) filter (where event_name = 'official_site_clicked')::int as "selfCheckClicks",
         count(*) filter (where event_name = 'callback_cta_clicked')::int as "callbackClicks"
-      from analytics_events ae
-      where occurred_at >= ${startIso}::timestamptz
-        and path like '/blog/%'
-        and not exists (
-          select 1 from assessment_callback_requests test_request
-          where test_request.is_test = true
-            and test_request.anonymous_id is not null
-            and test_request.anonymous_id = ae.anonymous_id
-        )
+      from blog_events
       group by path order by views desc, path asc
       limit 50
     `),
@@ -149,6 +156,13 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
   const unsubscribed = Number((unsubscribedResult[0] as { unsubscribed?: number } | undefined)?.unsubscribed ?? 0);
   const callbackOperations = numeric((callbackOperationsResult[0] ?? {}) as CallbackOperationsRow);
   const paymentOperations = numeric((paymentOperationsResult[0] ?? {}) as PaymentOperationsRow);
+  const blogPerformance = blogPerformanceResult.map((row) => numeric(row as BlogPerformanceRow));
+  const blogSummary = blogPerformance.reduce<BlogSummary>((summary, row) => ({
+    views: summary.views + (row.views ?? 0),
+    readers: row.totalReaders ?? summary.readers,
+    selfCheckClicks: summary.selfCheckClicks + (row.selfCheckClicks ?? 0),
+    callbackClicks: summary.callbackClicks + (row.callbackClicks ?? 0),
+  }), { views: 0, readers: 0, selfCheckClicks: 0, callbackClicks: 0 });
   return {
     start,
     funnel: { visitors: funnel.visitors ?? 0, leads: funnel.leads ?? 0, downloads: funnel.downloads ?? 0, ctaClicks: funnel.ctaClicks ?? 0, consultations: funnel.consultations ?? 0, callbackClicks: funnel.callbackClicks ?? 0, callbacks: funnel.callbacks ?? 0 },
@@ -164,7 +178,8 @@ export async function getAnalyticsDashboard(period: DashboardPeriod) {
       grossRevenue: paymentOperations.grossRevenue ?? 0, refundedAmount: paymentOperations.refundedAmount ?? 0,
     },
     productPayments: productPaymentsResult.map((row) => numeric(row as ProductPaymentRow)),
-    blogPerformance: blogPerformanceResult.map((row) => numeric(row as BlogPerformanceRow)),
+    blogSummary,
+    blogPerformance,
     utm: utmResult.map((row) => numeric(row as UtmRow)),
   };
 }
