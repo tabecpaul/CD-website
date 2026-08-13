@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
 import LegalDocument from "@/components/LegalDocument";
 import Footer from "@/components/sections/Footer";
+import ConsentSettingsButton from "@/features/meta-pixel/components/ConsentSettingsButton";
 
 export const metadata: Metadata = {
   title: "개인정보처리방침 | Career Direct Korea",
@@ -12,7 +13,7 @@ export default function PrivacyPage() {
     <>
       <main className="flex flex-1 flex-col bg-cream">
         <PageHeader />
-        <LegalDocument title="개인정보처리방침" effectiveDate="2026년 8월 9일">
+        <LegalDocument title="개인정보처리방침" effectiveDate="2026년 8월 13일">
 
           <h2>1. 개인정보의 처리 목적</h2>
           <p>
@@ -184,7 +185,25 @@ export default function PrivacyPage() {
             행동 기반 광고나 외부 광고 프로파일링에 사용하지 않습니다.
           </p>
 
-          <h2>11. 개인정보 보호책임자</h2>
+          <h2 id="optional-analytics">11. 선택적 광고 성과 측정 도구</h2>
+          <p>
+            회사는 이용자가 &ldquo;모두 허용&rdquo;을 선택한 경우에만 Meta Pixel을 사용하여 페이지 방문,
+            진로방향 자가진단 PDF 신청 및 20분 무료 콜백 신청 여부를 측정합니다. 이름, 이메일,
+            전화번호, 상담 내용이나 자체 익명 방문 ID는 Meta에 전송하지 않으며, 허용하지 않아도
+            모든 서비스를 동일하게 이용할 수 있습니다. 선택은 아래에서 언제든 변경할 수 있습니다.
+          </p>
+          <table>
+            <tbody>
+              <tr><th>제공자</th><td>Meta Platforms, Inc.</td></tr>
+              <tr><th>처리 목적</th><td>Meta 광고 유입과 전환 성과 측정</td></tr>
+              <tr><th>처리 정보</th><td>페이지 URL, PageView·Lead·Schedule 이벤트와 Meta가 자동으로 처리하는 브라우저·기기·접속 정보</td></tr>
+              <tr><th>처리 시점</th><td>이용자가 모두 허용을 선택한 후 암호화된 네트워크를 통해 전송</td></tr>
+              <tr><th>처리 국가·기간</th><td>미국 등 Meta의 데이터 처리 지역 · Meta의 데이터 정책 및 이용자 설정에 따른 기간</td></tr>
+            </tbody>
+          </table>
+          <ConsentSettingsButton />
+
+          <h2>12. 개인정보 보호책임자</h2>
           <table>
             <tbody>
               <tr>
@@ -212,14 +231,14 @@ export default function PrivacyPage() {
             보호책임자에게 문의하실 수 있습니다.
           </p>
 
-          <h2>12. 개인정보 처리방침의 변경</h2>
+          <h2>13. 개인정보 처리방침의 변경</h2>
           <p>
             이 개인정보처리방침은 시행일로부터 적용되며, 법령 및 방침에
             따른 변경내용의 추가, 삭제 및 정정이 있는 경우에는 변경사항의
             시행 7일 전부터 공지사항을 통하여 고지할 것입니다.
           </p>
 
-          <h2>13. 권익침해 구제방법</h2>
+          <h2>14. 권익침해 구제방법</h2>
           <p>
             정보주체는 개인정보침해로 인한 구제를 받기 위하여
             개인정보분쟁조정위원회, 한국인터넷진흥원 개인정보침해신고센터

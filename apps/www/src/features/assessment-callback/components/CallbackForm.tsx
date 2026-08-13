@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { trackMetaEvent } from "@/features/meta-pixel/client";
 import {
   ageRangeOptions,
   callbackTopics,
@@ -74,6 +75,7 @@ export default function CallbackForm({ minDate, maxDate, attribution }: Props) {
       });
       const result = await response.json() as { ok?: boolean; error?: string };
       if (!response.ok || !result.ok) throw new Error(result.error ?? "submission_unavailable");
+      trackMetaEvent("Schedule");
       setSubmitted(true);
     } catch (submitError) {
       const code = submitError instanceof Error ? submitError.message : "submission_unavailable";
