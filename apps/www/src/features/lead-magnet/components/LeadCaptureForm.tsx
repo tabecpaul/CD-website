@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { ArrowRight, CheckCircle2, LoaderCircle, LockKeyhole } from "lucide-react";
+import { trackMetaEvent } from "@/features/meta-pixel/client";
 
 export default function LeadCaptureForm({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
@@ -38,6 +39,7 @@ export default function LeadCaptureForm({ compact = false }: { compact?: boolean
         setError(result.error ?? "신청을 처리하지 못했습니다.");
         return;
       }
+      trackMetaEvent("Lead");
       router.push(`/career-check/thank-you?token=${result.token}`);
     } catch {
       setError("네트워크 연결을 확인하고 다시 시도해 주세요.");
