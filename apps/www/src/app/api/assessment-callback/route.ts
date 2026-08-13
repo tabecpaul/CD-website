@@ -8,8 +8,8 @@ import { firstAttribution, recordAnalyticsEventSafely, visitorIdFromRequest } fr
 const MAX_BODY_BYTES = 8_192;
 
 export async function POST(request: Request) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://start.careerdirect.kr";
-  if (request.headers.get("origin") !== new URL(siteUrl).origin) {
+  const requestOrigin = new URL(request.url).origin;
+  if (request.headers.get("origin") !== requestOrigin) {
     return Response.json({ ok: false, error: "forbidden" }, { status: 403 });
   }
   const text = await request.text();
