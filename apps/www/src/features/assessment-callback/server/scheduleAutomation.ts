@@ -4,6 +4,7 @@ import { recordAnalyticsEventSafely } from "@/features/analytics/server/events";
 import { sendScheduleReminderEmail } from "./emails";
 import { scheduleLinks } from "./scheduleLinks";
 import { issueScheduleToken } from "./scheduleTokens";
+import { callbackDurationMinutes, normalizeContactMethod } from "../domain";
 
 export async function processDueCallbackReminders(limit = 40) {
   const jobs = await db.query.callbackScheduleEmailJobs.findMany({
@@ -22,9 +23,21 @@ export async function processDueCallbackReminders(limit = 40) {
       continue;
     }
     try {
+      const contactMethod = normalizeContactMethod(request.contactMethod);
+      if (contactMethod === "direct_assessment") {
+        await db.update(callbackScheduleEmailJobs).set({ status: "skipped", updatedAt: new Date() }).where(eq(callbackScheduleEmailJobs.id, job.id));
+        summary.skipped++;
+        continue;
+      }
+      const durationMinutes = callbackDurationMinutes(contactMethod);
+      if (durationMinutes === null) {
+        await db.update(callbackScheduleEmailJobs).set({ status: "skipped", updatedAt: new Date() }).where(eq(callbackScheduleEmailJobs.id, job.id));
+        summary.skipped++;
+        continue;
+      }
       const token = await issueScheduleToken(request.id, request.scheduleVersion, new Date(request.confirmedEndAt.getTime() + 24 * 60 * 60_000));
-      const links = scheduleLinks(token, request.confirmedStartAt, request.confirmedEndAt);
-      const result = await sendScheduleReminderEmail({ name: request.name, email: request.email, phone: request.phone, start: request.confirmedStartAt, end: request.confirmedEndAt, ...links });
+      const links = scheduleLinks(token, request.confirmedStartAt, request.confirmedEndAt, contactMethod, durationMinutes);
+      const result = await sendScheduleReminderEmail({ name: request.name, email: request.email, phone: request.phone, start: request.confirmedStartAt, end: request.confirmedEndAt, contactMethod, durationMinutes, ...links });
       if (!result.ok) {
         const error = new Error(result.errorCode);
         error.name = result.errorCode;

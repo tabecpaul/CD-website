@@ -2,7 +2,10 @@ import {
   ageRangeOptions,
   callbackTopics,
   genderOptions,
+  isContactMethod,
   maritalStatusOptions,
+  normalizeCallbackSource,
+  normalizeContactMethod,
   timeSlots,
 } from "../domain";
 
@@ -36,8 +39,13 @@ export function parseCallbackSubmission(value: unknown) {
   const name = limited(body.name, 60);
   const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const phone = typeof body.phone === "string" ? body.phone.replace(/\D/g, "") : "";
-  const preferredDate = typeof body.preferredDate === "string" ? body.preferredDate : "";
-  const timeSlot = allowed(timeSlots, body.timeSlot);
+  if (body.contactMethod != null && (typeof body.contactMethod !== "string" || !isContactMethod(body.contactMethod))) {
+    throw new Error("selection_invalid");
+  }
+  const contactMethod = normalizeContactMethod(typeof body.contactMethod === "string" ? body.contactMethod : null);
+  const needsSchedule = contactMethod !== "direct_assessment";
+  const preferredDate = needsSchedule && typeof body.preferredDate === "string" ? body.preferredDate : null;
+  const timeSlot = needsSchedule ? allowed(timeSlots, body.timeSlot) : null;
   const gender = allowed(genderOptions, body.gender);
   const ageRange = allowed(ageRangeOptions, body.ageRange);
   const maritalStatus = allowed(maritalStatusOptions, body.maritalStatus);
@@ -50,10 +58,10 @@ export function parseCallbackSubmission(value: unknown) {
   if (!name || name.length < 2 || !EMAIL.test(email) || email.length > 256 || !PHONE.test(phone)) {
     throw new Error("contact_invalid");
   }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(preferredDate) || preferredDate < kstDate(0) || preferredDate > kstDate(60)) {
+  if (needsSchedule && (!preferredDate || !/^\d{4}-\d{2}-\d{2}$/.test(preferredDate) || preferredDate < kstDate(0) || preferredDate > kstDate(60))) {
     throw new Error("date_invalid");
   }
-  if (!timeSlot || !gender || !ageRange || !maritalStatus || topics.length === 0 || topics.length !== rawTopics.length) {
+  if ((needsSchedule && !timeSlot) || !gender || !ageRange || !maritalStatus || topics.length === 0 || topics.length !== rawTopics.length) {
     throw new Error("selection_invalid");
   }
   if ((topics.includes("other") && !otherTopic) || (!topics.includes("other") && otherTopic)) {
@@ -65,6 +73,9 @@ export function parseCallbackSubmission(value: unknown) {
     name,
     email,
     phone,
+    contactMethod,
+    programCohort: limited(body.programCohort, 128, true),
+    institutionName: limited(body.institutionName, 160, true),
     preferredDate,
     timeSlot,
     gender,
@@ -74,7 +85,7 @@ export function parseCallbackSubmission(value: unknown) {
     otherTopic,
     privacyAgreed: true,
     marketingAgreed: body.marketingAgreed === true,
-    source: limited(body.source, 64, true),
+    source: normalizeCallbackSource(typeof body.source === "string" ? body.source : null),
     ctaLocation: limited(body.ctaLocation, 64, true),
     utmSource: limited(body.utmSource, 128, true),
     utmMedium: limited(body.utmMedium, 128, true),

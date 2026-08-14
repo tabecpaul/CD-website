@@ -6,10 +6,12 @@ import { trackMetaEvent } from "@/features/meta-pixel/client";
 import {
   ageRangeOptions,
   callbackTopics,
+  contactMethodOptions,
   genderOptions,
   maritalStatusOptions,
   timeSlots,
 } from "../domain";
+import type { ContactMethod } from "../domain";
 
 type Props = {
   minDate: string;
@@ -22,6 +24,10 @@ type Props = {
     utmCampaign?: string;
     utmContent?: string;
   };
+  context?: {
+    programCohort?: string;
+    institutionName?: string;
+  };
 };
 
 const errorMessages: Record<string, string> = {
@@ -33,13 +39,21 @@ const errorMessages: Record<string, string> = {
   submission_unavailable: "접수하지 못했습니다. 잠시 후 다시 시도해 주세요.",
 };
 
-export default function CallbackForm({ minDate, maxDate, attribution }: Props) {
+const submitLabels: Record<ContactMethod, string> = {
+  phone: "15분 무료 전화 상담 신청하기",
+  zoom: "20분 무료 Zoom 상담 신청하기",
+  direct_assessment: "Career Direct 평가 안내 요청하기",
+};
+
+export default function CallbackForm({ minDate, maxDate, attribution, context }: Props) {
+  const [contactMethod, setContactMethod] = useState<ContactMethod>("phone");
   const [topics, setTopics] = useState<string[]>([]);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [marketingAgreed, setMarketingAgreed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const needsSchedule = contactMethod !== "direct_assessment";
 
   function toggleTopic(value: string) {
     setTopics((current) => current.includes(value)
@@ -61,8 +75,11 @@ export default function CallbackForm({ minDate, maxDate, attribution }: Props) {
           name: form.get("name"),
           email: form.get("email"),
           phone: form.get("phone"),
-          preferredDate: form.get("preferredDate"),
-          timeSlot: form.get("timeSlot"),
+          contactMethod,
+          programCohort: context?.programCohort,
+          institutionName: context?.institutionName,
+          preferredDate: needsSchedule ? form.get("preferredDate") : null,
+          timeSlot: needsSchedule ? form.get("timeSlot") : null,
           gender: form.get("gender"),
           ageRange: form.get("ageRange"),
           maritalStatus: form.get("maritalStatus"),
@@ -75,7 +92,7 @@ export default function CallbackForm({ minDate, maxDate, attribution }: Props) {
       });
       const result = await response.json() as { ok?: boolean; error?: string };
       if (!response.ok || !result.ok) throw new Error(result.error ?? "submission_unavailable");
-      trackMetaEvent("Schedule");
+      trackMetaEvent(contactMethod === "direct_assessment" ? "Lead" : "Schedule");
       setSubmitted(true);
     } catch (submitError) {
       const code = submitError instanceof Error ? submitError.message : "submission_unavailable";
@@ -86,18 +103,22 @@ export default function CallbackForm({ minDate, maxDate, attribution }: Props) {
   }
 
   if (submitted) {
-    return <div className="rounded-[2rem] border border-teal/25 bg-white p-8 text-center shadow-sm sm:p-10"><p className="text-xs font-black tracking-[.15em] text-teal">CALLBACK RECEIVED</p><h2 className="mt-4 text-2xl font-black text-navy">콜백 신청이 접수되었습니다.</h2><p className="mt-4 leading-7 text-navy/65">영업일 기준 1일 이내에 연락드려 20분 통화 시간을 확정하겠습니다.</p><p className="mt-4 rounded-xl bg-cream p-4 text-sm leading-6 text-navy/60">신청만으로 결제되거나 검사가 시작되지 않습니다.</p></div>;
+    const direct = contactMethod === "direct_assessment";
+    const zoom = contactMethod === "zoom";
+    return <div className="rounded-[2rem] border border-teal/25 bg-white p-8 text-center shadow-sm sm:p-10"><p className="text-xs font-black tracking-[.15em] text-teal">REQUEST RECEIVED</p><h2 className="mt-4 text-2xl font-black text-navy">{direct ? "평가 안내 요청이 접수되었습니다." : "상담 신청이 접수되었습니다."}</h2><p className="mt-4 leading-7 text-navy/65">{direct ? "영업일 기준 1일 이내에 평가 진행 과정과 결제 안내를 보내드리겠습니다." : `영업일 기준 1일 이내에 연락드려 ${zoom ? "20분 Zoom" : "15분 전화"} 상담 시간을 확정하겠습니다.`}</p><p className="mt-4 rounded-xl bg-cream p-4 text-sm leading-6 text-navy/60">신청만으로 결제되거나 평가가 시작되지 않습니다.</p></div>;
   }
 
   const field = "h-12 rounded-xl border border-navy/15 bg-white px-4 text-sm text-navy outline-none focus:border-teal focus:ring-2 focus:ring-teal/15";
   return (
     <form onSubmit={submit} className="rounded-[2rem] border border-navy/10 bg-cream p-6 shadow-sm sm:p-9">
+      {(context?.institutionName || context?.programCohort) ? <div className="mb-6 rounded-xl border border-teal/20 bg-white p-4 text-sm leading-6 text-navy/70"><strong className="text-navy">프로그램 연계 신청</strong><br />{[context.institutionName, context.programCohort].filter(Boolean).join(" · ")}</div> : null}
+      <fieldset className="mb-7"><legend className="text-sm font-black text-navy">시작 방법을 선택해 주세요.</legend><div className="mt-3 grid gap-3">{contactMethodOptions.map((method) => <label key={method.value} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 text-sm font-bold transition ${contactMethod === method.value ? "border-teal bg-white text-navy ring-2 ring-teal/10" : "border-navy/10 bg-white/50 text-navy/65"}`}><input type="radio" name="contactMethod" value={method.value} checked={contactMethod === method.value} onChange={() => setContactMethod(method.value)} className="size-4 accent-[#278a96]" />{method.label}</label>)}</div></fieldset>
       <div className="grid gap-5 sm:grid-cols-2">
         <label className="grid gap-2 text-sm font-bold text-navy">이름<input name="name" required minLength={2} maxLength={60} className={field} placeholder="이름을 입력해 주세요" /></label>
         <label className="grid gap-2 text-sm font-bold text-navy">휴대전화<input name="phone" required inputMode="tel" className={field} placeholder="010-0000-0000" /></label>
         <label className="grid gap-2 text-sm font-bold text-navy sm:col-span-2">이메일<input name="email" required type="email" className={field} placeholder="example@email.com" /></label>
-        <label className="grid gap-2 text-sm font-bold text-navy">희망 날짜<input name="preferredDate" required type="date" min={minDate} max={maxDate} className={field} /></label>
-        <label className="grid gap-2 text-sm font-bold text-navy">희망 시간대<select name="timeSlot" required defaultValue="" className={field}><option value="" disabled>선택해 주세요</option>{timeSlots.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
+        {needsSchedule ? <><label className="grid gap-2 text-sm font-bold text-navy">희망 날짜<input name="preferredDate" required type="date" min={minDate} max={maxDate} className={field} /></label>
+        <label className="grid gap-2 text-sm font-bold text-navy">희망 시간대<select name="timeSlot" required defaultValue="" className={field}><option value="" disabled>선택해 주세요</option>{timeSlots.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label></> : null}
         <label className="grid gap-2 text-sm font-bold text-navy">성별<select name="gender" defaultValue="prefer_not_to_say" className={field}>{genderOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
         <label className="grid gap-2 text-sm font-bold text-navy">연령대<select name="ageRange" defaultValue="prefer_not_to_say" className={field}>{ageRangeOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
         <label className="grid gap-2 text-sm font-bold text-navy sm:col-span-2">혼인 여부<select name="maritalStatus" defaultValue="prefer_not_to_say" className={field}>{maritalStatusOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
@@ -107,12 +128,12 @@ export default function CallbackForm({ minDate, maxDate, attribution }: Props) {
       {topics.includes("other") ? <label className="mt-4 grid gap-2 text-sm font-bold text-navy">기타 내용<textarea name="otherTopic" required maxLength={300} rows={3} className="rounded-xl border border-navy/15 bg-white p-4 text-sm outline-none focus:border-teal" placeholder="간단히 적어 주세요" /></label> : null}
 
       <div className="mt-7 space-y-3 border-t border-navy/10 pt-6 text-sm leading-6 text-navy/70">
-        <label className="flex items-start gap-3"><input type="checkbox" required checked={privacyAgreed} onChange={(event) => setPrivacyAgreed(event.target.checked)} className="mt-1 size-4 accent-[#278a96]" /><span><strong className="text-teal">[필수]</strong> 콜백 제공을 위한 개인정보 수집·이용에 동의합니다. <Link href="/privacy" target="_blank" className="underline">내용 보기</Link></span></label>
-        <label className="flex items-start gap-3"><input type="checkbox" checked={marketingAgreed} onChange={(event) => setMarketingAgreed(event.target.checked)} className="mt-1 size-4 accent-[#278a96]" /><span><strong className="text-teal">[선택]</strong> Career Direct 평가·코칭 안내 이메일 수신에 동의합니다.</span></label>
+        <label className="flex items-start gap-3"><input type="checkbox" required checked={privacyAgreed} onChange={(event) => setPrivacyAgreed(event.target.checked)} className="mt-1 size-4 accent-[#278a96]" /><span><strong className="text-teal">[필수]</strong> 평가·상담 제공을 위한 개인정보 수집·이용에 동의합니다. <Link href="/privacy" target="_blank" className="underline">내용 보기</Link></span></label>
+        <label className="flex items-start gap-3"><input type="checkbox" checked={marketingAgreed} onChange={(event) => setMarketingAgreed(event.target.checked)} className="mt-1 size-4 accent-[#278a96]" /><span><strong className="text-teal">[선택]</strong> Career Direct 평가·컨설팅 안내 이메일 수신에 동의합니다.</span></label>
       </div>
       {error ? <p role="alert" className="mt-5 rounded-xl bg-red-50 p-4 text-sm font-bold text-red-700">{error}</p> : null}
-      <button type="submit" disabled={!privacyAgreed || topics.length === 0 || submitting} className="mt-6 h-14 w-full rounded-xl bg-navy px-6 font-black text-white transition hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-40">{submitting ? "접수 중..." : "20분 무료 콜백 신청하기"}</button>
-      <p className="mt-3 text-center text-xs leading-5 text-navy/45">신청만으로 결제되거나 검사가 시작되지 않습니다.</p>
+      <button type="submit" disabled={!privacyAgreed || topics.length === 0 || submitting} className="mt-6 h-14 w-full rounded-xl bg-navy px-6 font-black text-white transition hover:bg-navy/90 disabled:cursor-not-allowed disabled:opacity-40">{submitting ? "접수 중..." : submitLabels[contactMethod]}</button>
+      <p className="mt-3 text-center text-xs leading-5 text-navy/45">신청만으로 결제되거나 평가가 시작되지 않습니다.</p>
     </form>
   );
 }

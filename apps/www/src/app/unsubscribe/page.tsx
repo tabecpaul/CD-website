@@ -4,7 +4,9 @@ import UnsubscribeAction from "@/features/lead-magnet/components/UnsubscribeActi
 
 export const metadata: Metadata = { title: "이메일 수신 거부 | Career Direct Korea", robots: { index: false, follow: false } };
 
-export default async function UnsubscribePage({ searchParams }: PageProps<"/unsubscribe">) {
+type UnsubscribePageProps = { searchParams: Promise<{ token?: string | string[] }> };
+
+export default async function UnsubscribePage({ searchParams }: UnsubscribePageProps) {
   const { token } = await searchParams;
   const valid = typeof token === "string" && /^[a-f0-9]{48}$/.test(token);
   return (

@@ -8,7 +8,9 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function ThankYouPage({ searchParams }: PageProps<"/career-check/thank-you">) {
+type ThankYouPageProps = { searchParams: Promise<{ token?: string | string[] }> };
+
+export default async function ThankYouPage({ searchParams }: ThankYouPageProps) {
   const { token } = await searchParams;
   const validToken = typeof token === "string" && /^[a-f0-9]{48}$/.test(token);
 

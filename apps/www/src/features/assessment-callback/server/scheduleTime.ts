@@ -4,7 +4,7 @@ const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const TIME_PATTERN = /^(\d{2}):(\d{2})$/;
 const KOREA_OFFSET_MS = 9 * 60 * 60 * 1000;
 
-export function parseKoreaSchedule(date: string, time: string) {
+export function parseKoreaSchedule(date: string, time: string, durationMinutes = CALLBACK_DURATION_MINUTES) {
   const dateMatch = DATE_PATTERN.exec(date);
   const timeMatch = TIME_PATTERN.exec(time);
   if (!dateMatch || !timeMatch) throw new Error("SCHEDULE_INPUT_INVALID");
@@ -21,7 +21,7 @@ export function parseKoreaSchedule(date: string, time: string) {
   if (korea.getUTCFullYear() !== year || korea.getUTCMonth() + 1 !== month || korea.getUTCDate() !== day || korea.getUTCHours() !== hour || korea.getUTCMinutes() !== minute) {
     throw new Error("SCHEDULE_INPUT_INVALID");
   }
-  const end = new Date(start.getTime() + CALLBACK_DURATION_MINUTES * 60_000);
+  const end = new Date(start.getTime() + durationMinutes * 60_000);
   return { start, end };
 }
 

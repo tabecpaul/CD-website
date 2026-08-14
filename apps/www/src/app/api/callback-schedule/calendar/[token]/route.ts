@@ -1,10 +1,21 @@
 import { callbackCalendarIcs } from "@/features/assessment-callback/server/calendar";
+import { callbackDurationMinutes, normalizeContactMethod } from "@/features/assessment-callback/domain";
 import { getPublicScheduleByToken } from "@/features/assessment-callback/server/reschedule";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ token: string }> }) {
   const schedule = await getPublicScheduleByToken((await params).token);
   if (!schedule?.confirmedStartAt || !schedule.confirmedEndAt) return new Response("Not found", { status: 404 });
-  const body = callbackCalendarIcs({ start: schedule.confirmedStartAt, end: schedule.confirmedEndAt, uid: `callback-${schedule.id}-v${schedule.scheduleVersion}` });
+  const contactMethod = normalizeContactMethod(schedule.contactMethod);
+  if (contactMethod === "direct_assessment") return new Response("Not found", { status: 404 });
+  const durationMinutes = callbackDurationMinutes(contactMethod);
+  if (durationMinutes === null) return new Response("Not found", { status: 404 });
+  const body = callbackCalendarIcs({
+    start: schedule.confirmedStartAt,
+    end: schedule.confirmedEndAt,
+    uid: `callback-${schedule.id}-v${schedule.scheduleVersion}`,
+    contactMethod,
+    durationMinutes,
+  });
   return new Response(body, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
