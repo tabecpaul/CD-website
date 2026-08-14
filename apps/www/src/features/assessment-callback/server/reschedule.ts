@@ -10,7 +10,7 @@ export async function getPublicScheduleByToken(token: string) {
   if (!access) return null;
   const request = await db.query.assessmentCallbackRequests.findFirst({
     where: and(eq(assessmentCallbackRequests.id, access.callbackRequestId), eq(assessmentCallbackRequests.scheduleVersion, access.scheduleVersion)),
-    columns: { id: true, name: true, confirmedStartAt: true, confirmedEndAt: true, scheduleStatus: true, scheduleVersion: true },
+    columns: { id: true, name: true, contactMethod: true, confirmedStartAt: true, confirmedEndAt: true, scheduleStatus: true, scheduleVersion: true },
   });
   if (!request?.confirmedStartAt || !request.confirmedEndAt || !["confirmed", "reschedule_requested"].includes(request.scheduleStatus)) return null;
   return request;

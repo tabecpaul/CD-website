@@ -4,6 +4,7 @@ import { recordAnalyticsEventSafely } from "@/features/analytics/server/events";
 import { sendScheduleConfirmationEmail } from "./emails";
 import { scheduleLinks } from "./scheduleLinks";
 import { issueScheduleToken } from "./scheduleTokens";
+import { callbackDurationMinutes, normalizeContactMethod } from "../domain";
 
 const ACTIVE_SCHEDULES = ["confirmed", "reschedule_requested"];
 
@@ -23,9 +24,13 @@ export async function findScheduleConflicts(id: number, start: Date, end: Date) 
 async function sendConfirmationForCurrentSchedule(id: number, reconfirmed: boolean) {
   const request = await db.query.assessmentCallbackRequests.findFirst({ where: eq(assessmentCallbackRequests.id, id) });
   if (!request?.confirmedStartAt || !request.confirmedEndAt || !ACTIVE_SCHEDULES.includes(request.scheduleStatus)) return null;
+  const contactMethod = normalizeContactMethod(request.contactMethod);
+  if (contactMethod === "direct_assessment") return null;
+  const durationMinutes = callbackDurationMinutes(contactMethod);
+  if (durationMinutes === null) return null;
   const expiresAt = new Date(request.confirmedEndAt.getTime() + 24 * 60 * 60_000);
   const token = await issueScheduleToken(id, request.scheduleVersion, expiresAt);
-  const links = scheduleLinks(token, request.confirmedStartAt, request.confirmedEndAt);
+  const links = scheduleLinks(token, request.confirmedStartAt, request.confirmedEndAt, contactMethod, durationMinutes);
   const result = await sendScheduleConfirmationEmail({
     name: request.name,
     email: request.email,
@@ -34,6 +39,8 @@ async function sendConfirmationForCurrentSchedule(id: number, reconfirmed: boole
     end: request.confirmedEndAt,
     ...links,
     reconfirmed,
+    contactMethod,
+    durationMinutes,
   });
   const now = new Date();
   await db.update(assessmentCallbackRequests).set({
@@ -48,10 +55,15 @@ async function sendConfirmationForCurrentSchedule(id: number, reconfirmed: boole
 
 export async function confirmCallbackSchedule(id: number, start: Date, end: Date, conflictConfirmed: boolean) {
   if (!Number.isSafeInteger(id) || id <= 0) return null;
-  const conflicts = await findScheduleConflicts(id, start, end);
-  if (conflicts.length && !conflictConfirmed) return { kind: "conflict" as const, conflicts };
   const current = await db.query.assessmentCallbackRequests.findFirst({ where: eq(assessmentCallbackRequests.id, id) });
   if (!current) return null;
+  const contactMethod = normalizeContactMethod(current.contactMethod);
+  if (contactMethod === "direct_assessment") throw new Error("SCHEDULE_NOT_APPLICABLE");
+  const durationMinutes = callbackDurationMinutes(contactMethod);
+  if (durationMinutes === null) throw new Error("SCHEDULE_NOT_APPLICABLE");
+  const normalizedEnd = new Date(start.getTime() + durationMinutes * 60_000);
+  const conflicts = await findScheduleConflicts(id, start, normalizedEnd);
+  if (conflicts.length && !conflictConfirmed) return { kind: "conflict" as const, conflicts };
   const nextVersion = current.scheduleVersion + 1;
   const reconfirmed = current.scheduleVersion > 0;
   const now = new Date();
@@ -59,7 +71,7 @@ export async function confirmCallbackSchedule(id: number, start: Date, end: Date
     const [updated] = await tx.update(assessmentCallbackRequests).set({
       scheduleStatus: "confirmed",
       confirmedStartAt: start,
-      confirmedEndAt: end,
+      confirmedEndAt: normalizedEnd,
       scheduleVersion: nextVersion,
       status: current.status === "new" ? "scheduled" : current.status,
       statusUpdatedAt: current.status === "new" ? now : current.statusUpdatedAt,

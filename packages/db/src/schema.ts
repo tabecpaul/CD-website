@@ -167,8 +167,11 @@ export const assessmentCallbackRequests = pgTable(
     name: text("name").notNull(),
     email: varchar("email", { length: 256 }).notNull(),
     phone: varchar("phone", { length: 32 }).notNull(),
-    preferredDate: date("preferred_date", { mode: "string" }).notNull(),
-    timeSlot: varchar("time_slot", { length: 24 }).notNull(),
+    contactMethod: varchar("contact_method", { length: 32 }).notNull().default("phone"),
+    programCohort: varchar("program_cohort", { length: 128 }),
+    institutionName: varchar("institution_name", { length: 160 }),
+    preferredDate: date("preferred_date", { mode: "string" }),
+    timeSlot: varchar("time_slot", { length: 24 }),
     gender: varchar("gender", { length: 24 }).notNull().default("prefer_not_to_say"),
     ageRange: varchar("age_range", { length: 24 }).notNull().default("prefer_not_to_say"),
     maritalStatus: varchar("marital_status", { length: 24 }).notNull().default("prefer_not_to_say"),
@@ -217,6 +220,8 @@ export const assessmentCallbackRequests = pgTable(
     index("assessment_callback_schedule_start_idx").on(table.scheduleStatus, table.confirmedStartAt),
     index("assessment_callback_test_created_idx").on(table.isTest, table.createdAt),
     index("assessment_callback_anonymous_created_idx").on(table.anonymousId, table.createdAt),
+    index("assessment_callback_contact_method_created_idx").on(table.contactMethod, table.createdAt),
+    index("assessment_callback_source_created_idx").on(table.source, table.createdAt),
   ],
 );
 

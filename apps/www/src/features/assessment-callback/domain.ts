@@ -32,6 +32,44 @@ export const scheduleStatusLabels: Record<ScheduleStatus, string> = {
 export const CALLBACK_DURATION_MINUTES = 20;
 export const CALLBACK_TIME_ZONE = "Asia/Seoul";
 
+export const contactMethodOptions = [
+  { value: "phone", label: "전화로 15분 상담", durationMinutes: 15 },
+  { value: "zoom", label: "Zoom으로 20분 상담", durationMinutes: 20 },
+  { value: "direct_assessment", label: "상담 없이 평가 신청", durationMinutes: null },
+] as const;
+
+export type ContactMethod = (typeof contactMethodOptions)[number]["value"];
+
+export const callbackSourceOptions = [
+  "lead_magnet",
+  "general_lecture",
+  "christian_lecture",
+  "living_by_design_workshop",
+  "direct",
+] as const;
+
+export type CallbackSource = (typeof callbackSourceOptions)[number];
+
+export function isContactMethod(value: string): value is ContactMethod {
+  return contactMethodOptions.some((option) => option.value === value);
+}
+
+export function normalizeContactMethod(value: string | null | undefined): ContactMethod {
+  return value && isContactMethod(value) ? value : "phone";
+}
+
+export function isCallbackSource(value: string): value is CallbackSource {
+  return callbackSourceOptions.some((option) => option === value);
+}
+
+export function normalizeCallbackSource(value: string | null | undefined): CallbackSource {
+  return value && isCallbackSource(value) ? value : "direct";
+}
+
+export function callbackDurationMinutes(contactMethod: ContactMethod): number | null {
+  return contactMethodOptions.find((option) => option.value === contactMethod)?.durationMinutes ?? null;
+}
+
 export const callbackStatusLabels: Record<CallbackStatus, string> = {
   new: "신규 신청",
   scheduled: "콜백 일정 확정",

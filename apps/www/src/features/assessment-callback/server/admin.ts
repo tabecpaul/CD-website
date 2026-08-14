@@ -1,7 +1,7 @@
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { assessmentCallbackPayments, assessmentCallbackRequests, callbackPaymentAuditLogs, db } from "@newland/db";
 import { auditValues } from "@/features/callback-payment/server/audit";
-import { callbackStatuses, type CallbackStatus } from "../domain";
+import { callbackStatuses, normalizeContactMethod, type CallbackStatus } from "../domain";
 import { sendAdminCallbackEmail, sendCustomerCallbackEmail } from "./emails";
 
 export const callbackOperationFilters = ["real", "test", "overdue", "email_failed", "evidence_needed", "refund_pending"] as const;
@@ -82,6 +82,9 @@ export async function resendCallbackEmail(id: number, audience: "admin" | "custo
     preferredDate: request.preferredDate,
     timeSlot: request.timeSlot,
     topics: request.topics,
+    contactMethod: normalizeContactMethod(request.contactMethod),
+    programCohort: request.programCohort,
+    institutionName: request.institutionName,
   };
   const result = audience === "admin"
     ? await sendAdminCallbackEmail(id, input)

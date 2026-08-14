@@ -53,6 +53,8 @@ export async function POST(request: Request) {
 
     const [created] = await db.insert(assessmentCallbackRequests).values({
       ...attributedInput,
+      preferredDate: attributedInput.preferredDate ?? undefined,
+      timeSlot: attributedInput.timeSlot ?? undefined,
       anonymousId,
       consentVersion: CALLBACK_CONSENT_VERSION,
     }).returning({ id: assessmentCallbackRequests.id });
@@ -66,8 +68,8 @@ export async function POST(request: Request) {
     });
 
     const [adminResult, customerResult] = await Promise.all([
-      sendAdminCallbackEmail(created.id, input),
-      sendCustomerCallbackEmail(input),
+      sendAdminCallbackEmail(created.id, attributedInput),
+      sendCustomerCallbackEmail(attributedInput),
     ]);
     await db.update(assessmentCallbackRequests).set({
       adminEmailStatus: adminResult.ok ? "sent" : "failed",
