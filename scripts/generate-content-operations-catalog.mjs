@@ -71,9 +71,14 @@ function cardSlides(body) {
   return [...cardArea.matchAll(/^\*\*(\d)장 · ([^*]+)\*\*\n([\s\S]*?)(?=\n+\*\*\d장 ·|(?![\s\S]))/gm)].map((match) => `${match[1]}장 · ${match[2].trim()}\n${match[3].trim()}`);
 }
 
-function socialCopy(body) {
+function socialCopy(body, channel) {
   const raw = body.match(/### 인스타그램·페이스북 공용 캡션\n([\s\S]*?)(?=\n### 이미지 대체 텍스트|$)/)?.[1] ?? "";
-  return raw.split(/\r?\n/).filter((line) => !line.startsWith("**소재:**") && !line.startsWith("**이미지 대체 텍스트:**")).join("\n").trim();
+  return raw.split(/\r?\n/).filter((line) => {
+    if (line.startsWith("**소재:**") || line.startsWith("**이미지 대체 텍스트:**")) return false;
+    if (channel === "instagram" && line.startsWith("**Facebook")) return false;
+    if (channel === "facebook" && line.startsWith("**Instagram")) return false;
+    return true;
+  }).join("\n").trim();
 }
 
 function altText(body) {
@@ -111,8 +116,8 @@ for (const campaign of campaigns) {
     const officialUrl = `https://www.careerdirect.kr/blog/${slug}`;
     const tasks = [
       { channel: "naver_blog", scheduledTime: "08:00", postCopy: naverCopy, cardSlides: null, altText: null },
-      { channel: "instagram", scheduledTime: "19:00", postCopy: socialCopy(social.body), cardSlides: slides, altText: altText(social.body) },
-      { channel: "facebook", scheduledTime: "19:00", postCopy: socialCopy(social.body), cardSlides: slides, altText: altText(social.body) },
+      { channel: "instagram", scheduledTime: "19:00", postCopy: socialCopy(social.body, "instagram"), cardSlides: slides, altText: altText(social.body) },
+      { channel: "facebook", scheduledTime: "19:00", postCopy: socialCopy(social.body, "facebook"), cardSlides: slides, altText: altText(social.body) },
       { channel: "threads", scheduledTime: "21:00", postCopy: thread.body, cardSlides: null, altText: null },
     ].map((task) => ({ ...task, trackedUrl: ctaLink(rows, slug, task.channel, campaign.linkPurpose) }));
     catalog.push({ slug, title, category, campaign: campaign.id, officialUrl, ctaType, ctaUrl, isTest: false, publishDate: social.publishDate, tasks });

@@ -1,10 +1,10 @@
 import { hasAdminSession } from "@/features/admin/server/auth";
+import { isTrustedAdminOrigin } from "@/features/admin/server/origin";
 import { resendScheduleConfirmation } from "@/features/assessment-callback/server/scheduleAdmin";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await hasAdminSession())) return Response.json({ error: "unauthorized" }, { status: 401 });
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://start.careerdirect.kr";
-  if (request.headers.get("origin") !== new URL(siteUrl).origin) return Response.json({ error: "forbidden" }, { status: 403 });
+  if (!isTrustedAdminOrigin(request.headers.get("origin"))) return Response.json({ error: "forbidden" }, { status: 403 });
   try {
     const result = await resendScheduleConfirmation(Number((await params).id));
     if (!result) return Response.json({ error: "schedule_not_confirmed" }, { status: 409 });

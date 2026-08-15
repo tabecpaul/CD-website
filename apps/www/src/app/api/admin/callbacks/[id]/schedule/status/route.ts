@@ -1,12 +1,12 @@
 import { hasAdminSession } from "@/features/admin/server/auth";
+import { isTrustedAdminOrigin } from "@/features/admin/server/origin";
 import { updateScheduleStatus } from "@/features/assessment-callback/server/scheduleAdmin";
 
 const actions = ["complete", "cancel", "keep_existing"] as const;
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await hasAdminSession())) return Response.json({ error: "unauthorized" }, { status: 401 });
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://start.careerdirect.kr";
-  if (request.headers.get("origin") !== new URL(siteUrl).origin) return Response.json({ error: "forbidden" }, { status: 403 });
+  if (!isTrustedAdminOrigin(request.headers.get("origin"))) return Response.json({ error: "forbidden" }, { status: 403 });
   try {
     const body = await request.json() as { action?: unknown };
     if (typeof body.action !== "string" || !actions.includes(body.action as typeof actions[number])) return Response.json({ error: "invalid_request" }, { status: 400 });
