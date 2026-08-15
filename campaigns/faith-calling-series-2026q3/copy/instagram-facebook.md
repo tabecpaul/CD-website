@@ -4,47 +4,47 @@
 
 ### 카드뉴스 8장
 
-**1장 · 표지**  
-하나님의 소명은  
+**1장 · 표지**
+하나님의 소명은
 직업 하나를 찾는 일일까요?
 
-**2장 · 불안의 정체**  
-“하나님의 뜻을 놓치면 어떻게 하지?”  
-이 두려움이 커지면 진로 선택은  
+**2장 · 불안의 정체**
+“하나님의 뜻을 놓치면 어떻게 하지?”
+이 두려움이 커지면 진로 선택은
 정답 직업 하나를 맞히는 시험이 됩니다.
 
-**3장 · 관점 전환**  
-직업은 소명의 중요한 영역이지만  
-소명의 전부는 아닙니다.  
-우리는 일터뿐 아니라 가족·교회·이웃 안에서도  
+**3장 · 관점 전환**
+직업은 소명의 중요한 영역이지만
+소명의 전부는 아닙니다.
+우리는 일터뿐 아니라 가족·교회·이웃 안에서도
 맡겨진 책임을 살아갑니다.
 
-**4장 · 성경의 출발점**  
-우리는 성과 이전에  
-하나님의 형상대로 지음 받았습니다.  
-직업은 존엄을 증명하는 수단이 아니라  
-맡겨진 자원을 사용하는 자리입니다.  
+**4장 · 성경의 출발점**
+우리는 성과 이전에
+하나님의 형상대로 지음 받았습니다.
+직업은 존엄을 증명하는 수단이 아니라
+맡겨진 자원을 사용하는 자리입니다.
 — 창세기 1:27–28, 개역개정
 
-**5장 · 분별의 다섯 기준**  
-한 가지 신호보다 함께 살펴보세요.  
-① 성경 ② 기도 ③ 공동체  
+**5장 · 분별의 다섯 기준**
+한 가지 신호보다 함께 살펴보세요.
+① 성경 ② 기도 ③ 공동체
 ④ 실제 경험 ⑤ 현실적 책임
 
-**6장 · 자기이해의 역할**  
-성격·흥미·재능·가치관은  
-하나님 나라의 청지기로 살아가기 위해  
-이해하고 돌보아야 할 자원입니다.  
+**6장 · 자기이해의 역할**
+성격·흥미·재능·가치관은
+하나님 나라의 청지기로 살아가기 위해
+이해하고 돌보아야 할 자원입니다.
 단, 이것이 곧 성령의 은사라는 뜻은 아닙니다.
 
-**7장 · 평가의 경계**  
-Career Direct는 하나님의 뜻을 판정하지 않습니다.  
-평가 결과는 결론문이 아니라  
+**7장 · 평가의 경계**
+Career Direct는 하나님의 뜻을 판정하지 않습니다.
+평가 결과는 결론문이 아니라
 더 좋은 질문과 작은 실험을 만드는 자료입니다.
 
-**8장 · 다음 행동**  
-“지금 맡겨진 사람·역할·자원 안에서  
-할 수 있는 다음의 신실한 행동은 무엇인가?”  
+**8장 · 다음 행동**
+“지금 맡겨진 사람·역할·자원 안에서
+할 수 있는 다음의 신실한 행동은 무엇인가?”
 20분 무료 콜백에서 질문을 함께 정리해 보세요.
 
 ### 인스타그램·페이스북 공용 캡션
@@ -61,8 +61,8 @@ Career Direct는 성격·흥미·재능·가치관을 통합해 자기이해를 
 
 20분 무료 콜백은 프로필 링크에서 신청할 수 있습니다.
 
-**Facebook 원문:** https://www.careerdirect.kr/blog/calling-is-more-than-a-job?utm_source=facebook&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=calling-is-more-than-a-job_facebook_20260818  
-**Facebook CTA:** https://start.careerdirect.kr/assessment-consultation?utm_source=facebook&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=calling-is-more-than-a-job_facebook_20260818_cta  
+**Facebook 원문:** https://www.careerdirect.kr/blog/calling-is-more-than-a-job?utm_source=facebook&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=calling-is-more-than-a-job_facebook_20260818
+**Facebook CTA:** https://start.careerdirect.kr/assessment-consultation?utm_source=facebook&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=calling-is-more-than-a-job_facebook_20260818_cta
 **Instagram 프로필 CTA:** https://start.careerdirect.kr/assessment-consultation?utm_source=instagram&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=calling-is-more-than-a-job_instagram_20260818_cta
 
 #기독교진로 #소명 #하나님의뜻 #진로분별 #청지기 #기독교직장인 #CareerDirectKorea
@@ -71,3 +71,81 @@ Career Direct는 성격·흥미·재능·가치관을 통합해 자기이해를 
 
 하나님의 소명을 직업 하나로 축소하지 않고 일·관계·책임 속에서 분별하는 방법을 설명하는 8장 카드뉴스. 창세기 1장 27–28절을 바탕으로 인간의 존엄과 청지기 책임을 설명하고, 성경·기도·공동체·경험·현실적 책임이라는 다섯 기준을 제시한다. Career Direct는 성격·흥미·재능·가치관을 이해하도록 돕지만 하나님의 뜻을 판정하지 않는다는 점과 20분 무료 콜백 안내가 포함되어 있다.
 
+---
+
+## 02 · 하나님의 뜻을 분별하는 다섯 가지 점검 — 2026-08-23
+
+### 카드뉴스 8장
+
+**1장 · 표지**
+하나님의 뜻을 어떻게 알 수 있을까요?
+진로 선택 전 5가지 점검
+
+**2장 · 신호의 한계**
+평안하다고 항상 옳은 것은 아니고
+문이 열렸다고 반드시 들어가야 하는 것도 아닙니다.
+불안하다고 틀린 길이라는 뜻도 아닙니다.
+
+**3장 · 질문을 바꾸세요**
+“무슨 신호가 정답을 증명할까?”보다
+“이 선택을 여러 기준으로
+어떻게 검증할까?”라고 물어보세요.
+— 로마서 12:2, 개역개정
+
+**4장 · 점검 1–2**
+① 말씀과 성품
+사랑·정의·진실·겸손을 훼손하지 않는가?
+② 동기와 변화
+회피·비교·인정욕구가 판단을 지배하는가?
+
+**5장 · 점검 3–4**
+③ 공동체의 검증
+믿을 만한 사람들은 무엇을 반복해서 보는가?
+④ 열매와 경험
+작은 실행에서 어떤 유익과 한계가 나타나는가?
+
+**6장 · 점검 5**
+⑤ 청지기적 책임
+가족·건강·재정·현재 약속을 존중하는가?
+현실을 살피는 일은 믿음 없는 타협이 아니라
+맡겨진 것을 책임 있게 돌보는 행동입니다.
+
+**7장 · 평가 이후 실험**
+Career Direct는 하나님의 뜻을 판정하지 않습니다.
+평가·컨설팅 이후에는 자기이해 가설을 바탕으로
+더 구체적인 30일 작은 실험을 설계할 수 있습니다.
+
+**8장 · 다음 행동**
+사실·해석·확인할 행동을 나누어 적어 보세요.
+혼자 정리하기 어렵다면 20분 무료 콜백에서
+다음 검증 행동을 함께 구조화하세요.
+
+### 인스타그램·페이스북 공용 캡션
+
+기도한 뒤 마음이 평안하면 하나님의 뜻일까요? 문이 열리면 반드시 들어가야 할까요?
+
+이런 경험을 무시할 필요는 없지만, 한 가지 신호가 다른 중요한 사실을 덮게 해서는 안 됩니다. 하나님의 뜻은 다음 다섯 기준을 함께 살피며 더 정직하게 분별할 수 있습니다.
+
+1. 말씀과 성품: 사랑과 진실을 훼손하지 않는가?
+2. 동기와 변화: 회피·비교·인정욕구가 판단을 지배하는가?
+3. 공동체의 검증: 믿을 만한 사람들은 무엇을 보는가?
+4. 열매와 경험: 작은 실행에서 어떤 유익과 한계가 반복되는가?
+5. 청지기적 책임: 가족·건강·재정·현재 약속을 존중하는가?
+
+로마서 12장 2절은 분별을 “마음을 새롭게 함으로 변화를 받아” 하나님의 뜻을 알아 가는 일과 연결합니다(개역개정). 다섯 기준은 하나님의 뜻을 계산하는 점수표가 아니라 성급한 확신과 자기기만을 줄이는 점검 틀입니다.
+
+Career Direct 평가도 하나님의 뜻을 판정하지 않습니다. 평가와 보고서 컨설팅 이후에는 성격·흥미·재능·가치관의 가설을 바탕으로 더 구체적인 30일 작은 실험을 설계할 수 있습니다.
+
+지금 여러분의 선택에서 가장 분명한 기준과 아직 ‘모름’으로 남은 기준은 무엇인가요?
+
+20분 무료 콜백은 프로필 링크에서 신청할 수 있습니다.
+
+**Facebook 원문:** https://www.careerdirect.kr/blog/five-tests-for-discerning-gods-will?utm_source=facebook&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=five-tests-for-discerning-gods-will_facebook_20260823
+**Facebook CTA:** https://start.careerdirect.kr/assessment-consultation?utm_source=facebook&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=five-tests-for-discerning-gods-will_facebook_20260823_cta
+**Instagram 프로필 CTA:** https://start.careerdirect.kr/assessment-consultation?utm_source=instagram&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=five-tests-for-discerning-gods-will_instagram_20260823_cta
+
+#하나님의뜻 #진로분별 #기독교진로 #이직고민 #소명 #청지기 #CareerDirectKorea
+
+### 이미지 대체 텍스트
+
+하나님의 뜻을 진로 선택에서 분별하기 위한 다섯 기준을 설명하는 8장 카드뉴스. 한 가지 신호의 한계를 짚고 로마서 12장 2절을 바탕으로 질문을 바꾸도록 안내한다. 말씀과 성품, 동기와 변화, 공동체의 검증, 열매와 경험, 하나님 나라의 청지기적 책임을 차례로 제시하고, Career Direct 평가 이후 30일 작은 실험과 20분 무료 콜백으로 연결한다.
