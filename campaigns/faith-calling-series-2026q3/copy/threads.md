@@ -37,3 +37,28 @@ Career Direct는 하나님의 뜻을 판정하지 않습니다. 평가와 보고
 **5/5**
 선택지를 사실·해석·확인할 행동으로 나누어 적어 보세요. 혼자 정리하기 어렵다면 20분 무료 콜백에서 다음 검증 행동을 함께 구조화할 수 있습니다.
 https://start.careerdirect.kr/assessment-consultation?utm_source=threads&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=five-tests-for-discerning-gods-will_threads_20260823_cta
+
+---
+
+## 03 · 은사·재능·강점 — 2026-08-27
+
+**1/5**
+
+잘하는 일이 곧 소명일까요? 영적 은사, 타고난 재능, 훈련된 기술과 실제 강점은 서로 연결될 수 있지만 자동으로 같은 것은 아닙니다.
+
+**2/5**
+
+영적 은사는 공동체를 세우도록 성령께서 주시는 선물, 재능은 비교적 자연스러운 잠재 능력, 기술은 연습으로 익힌 수행 능력, 강점은 여러 요소가 결합해 반복적으로 유익을 내는 능력입니다.
+
+**3/5**
+
+고린도전서 12장 4–7절은 은사·직분·사역은 다양하지만 성령의 나타나심은 공동의 유익을 위해 주어진다고 설명합니다(개역개정). “무엇을 가졌는가?”와 함께 “누구에게 어떤 유익을 주는가?”를 물어보세요.
+
+**4/5**
+
+Career Direct의 성격·흥미·재능·가치관은 자기이해를 돕지만 영적 은사를 측정하거나 하나님의 뜻을 판정하지 않습니다. 평가 이후에는 네 요소의 가설을 개인화된 30일 작은 실험으로 검증할 수 있습니다.
+
+**5/5**
+
+맡겨진 나를 이해하는 질문부터 시작하세요. 무료 진로 방향 자가진단은 영적 은사나 소명을 판정하지 않지만 Career Direct 평가와 30일 실험을 준비하는 출발점이 됩니다.
+https://start.careerdirect.kr/career-check?utm_source=threads&utm_medium=organic_social&utm_campaign=faith_calling_series_2026q3&utm_content=gifts-talents-strengths_threads_20260827_cta
