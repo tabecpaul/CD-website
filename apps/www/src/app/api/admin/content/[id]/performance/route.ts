@@ -1,11 +1,11 @@
 import { hasAdminSession } from "@/features/admin/server/auth";
+import { isTrustedAdminOrigin } from "@/features/admin/server/origin";
 import { saveContentPerformance } from "@/features/content-operations/server/admin";
 import { parseContentPerformance, parsePositiveId } from "@/features/content-operations/server/input";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await hasAdminSession())) return Response.json({ error: "unauthorized" }, { status: 401 });
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://start.careerdirect.kr";
-  if (request.headers.get("origin") !== new URL(siteUrl).origin) return Response.json({ error: "forbidden" }, { status: 403 });
+  if (!isTrustedAdminOrigin(request.headers.get("origin"))) return Response.json({ error: "forbidden" }, { status: 403 });
   if (Number(request.headers.get("content-length") ?? 0) > 5_000) return Response.json({ error: "request_too_large" }, { status: 413 });
   try {
     const id = parsePositiveId((await params).id);
@@ -18,4 +18,3 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return Response.json({ error: status === 503 ? "update_unavailable" : code.toLowerCase() }, { status });
   }
 }
-

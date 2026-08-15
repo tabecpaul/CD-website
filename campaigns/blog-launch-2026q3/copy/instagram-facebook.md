@@ -79,6 +79,9 @@
 
 무료 진로 방향 자가진단은 프로필 링크에서 받을 수 있습니다.
 
+**Instagram 원문:** https://www.careerdirect.kr/blog/why-career-anxiety-and-burnout?utm_source=instagram&utm_medium=organic_social&utm_campaign=blog_launch_2026q3&utm_content=why-career-anxiety-and-burnout_instagram_20260817
+**Instagram 프로필 CTA:** https://start.careerdirect.kr/career-check?utm_source=instagram&utm_medium=organic_social&utm_campaign=blog_launch_2026q3&utm_content=why-career-anxiety-and-burnout_instagram_20260817_cta
+
 **Facebook 원문:** https://www.careerdirect.kr/blog/why-career-anxiety-and-burnout?utm_source=facebook&utm_medium=organic_social&utm_campaign=blog_launch_2026q3&utm_content=why-career-anxiety-and-burnout_facebook_20260817
 **Facebook CTA:** https://start.careerdirect.kr/career-check?utm_source=facebook&utm_medium=organic_social&utm_campaign=blog_launch_2026q3&utm_content=why-career-anxiety-and-burnout_facebook_20260817_cta
 

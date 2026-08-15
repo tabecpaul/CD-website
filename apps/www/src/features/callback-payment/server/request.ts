@@ -1,9 +1,9 @@
 import { hasAdminSession } from "@/features/admin/server/auth";
+import { isTrustedAdminOrigin } from "@/features/admin/server/origin";
 
 export async function authorizePaymentRequest(request: Request) {
   if (!(await hasAdminSession())) return Response.json({ error: "unauthorized" }, { status: 401 });
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://start.careerdirect.kr";
-  if (request.headers.get("origin") !== new URL(siteUrl).origin) return Response.json({ error: "forbidden" }, { status: 403 });
+  if (!isTrustedAdminOrigin(request.headers.get("origin"))) return Response.json({ error: "forbidden" }, { status: 403 });
   return null;
 }
 
