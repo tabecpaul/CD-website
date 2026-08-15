@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Career Direct Korea operations
+
+- Content operations: `/admin/content`
+- Content notification recipient: `CONTENT_NOTIFICATION_EMAIL`
+- Content reminder endpoint: `/api/cron/content-reminders`
+- Cron installation SQL: `packages/db/operations/schedule-content-reminder-cron.sql`
+- Daily operating guide: `docs/operations/content-publishing-runbook.md`

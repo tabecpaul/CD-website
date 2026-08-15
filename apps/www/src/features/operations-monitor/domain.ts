@@ -6,8 +6,11 @@ export const operationsIssueDefinitions = {
   refund_pending: { label: "환불 처리 대기", severity: "critical", filter: "refund_pending" },
   lead_email_delayed: { label: "리드 이메일 작업 지연", severity: "critical", filter: null },
   callback_reminder_delayed: { label: "콜백 알림 작업 지연", severity: "critical", filter: null },
+  content_notification_failed: { label: "콘텐츠 알림 이메일 실패", severity: "critical", filter: null },
+  content_publish_overdue: { label: "콘텐츠 발행 확인 지연", severity: "warning", filter: null },
   lead_cron_stale: { label: "리드 이메일 Cron 이상", severity: "critical", filter: null },
   callback_cron_stale: { label: "콜백 알림 Cron 이상", severity: "critical", filter: null },
+  content_cron_stale: { label: "콘텐츠 알림 Cron 이상", severity: "critical", filter: null },
   monitor_cron_stale: { label: "운영 모니터링 Cron 이상", severity: "critical", filter: null },
 } as const;
 
@@ -16,5 +19,5 @@ export type OperationsIssue = { key: OperationsIssueKey; count: number };
 export type JobLastSuccess = { jobName: string; completedAt: string | null };
 export type OperationsSnapshot = { checkedAt: string; issues: OperationsIssue[]; issueCount: number; lastSuccess: JobLastSuccess[] };
 
-export const monitoredJobNames = ["lead-emails", "callback-reminders", "operations-monitor"] as const;
+export const monitoredJobNames = ["lead-emails", "callback-reminders", "content-reminders", "operations-monitor"] as const;
 export type MonitoredJobName = (typeof monitoredJobNames)[number];
