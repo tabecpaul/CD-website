@@ -11,14 +11,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
-          cache: npm
+      - name: Apply content operations migration when absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          table_exists="$(psql "$DATABASE_URL" -X -A -t -v ON_ERROR_STOP=1 \
+            -c "select to_regclass('public.content_operation_items') is not null")"
 
-      - run: npm ci
+          if [[ "$table_exists" == "t" ]]; then
+            echo "Content operations schema already exists; skipping migration."
+          else
+            psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 \
+              -f packages/db/drizzle/0013_small_puma.sql
+          fi
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
 
-      - name: Apply pending migrations to production
-        run: npm run db:migrate --workspace=@newland/db
+      - name: Verify content operations schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          table_count="$(psql "$DATABASE_URL" -X -A -t -v ON_ERROR_STOP=1 -c \
+            "select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relname in ('content_operation_items', 'content_channel_tasks', 'content_notification_deliveries', 'content_performance_snapshots') and c.relkind = 'r'")"
+
+          if [[ "$table_count" != "4" ]]; then
+            echo "Expected four content operations tables, found $table_count."
+            exit 1
+          fi
+
+          echo "Verified all four content operations tables."
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
