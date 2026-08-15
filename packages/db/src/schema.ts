@@ -1,5 +1,6 @@
 import {
   boolean,
+  check,
   date,
   index,
   integer,
@@ -386,5 +387,101 @@ export const operationsAlertDeliveries = pgTable(
   (table) => [
     uniqueIndex("operations_alert_date_fingerprint_unique").on(table.alertDate, table.fingerprint),
     index("operations_alert_status_created_idx").on(table.status, table.createdAt),
+  ],
+);
+
+export const contentOperationItems = pgTable(
+  "content_operation_items",
+  {
+    id: serial("id").primaryKey(),
+    slug: varchar("slug", { length: 160 }).notNull(),
+    title: varchar("title", { length: 240 }).notNull(),
+    category: varchar("category", { length: 80 }).notNull(),
+    campaign: varchar("campaign", { length: 128 }).notNull(),
+    officialUrl: varchar("official_url", { length: 500 }).notNull(),
+    ctaType: varchar("cta_type", { length: 32 }).notNull(),
+    ctaUrl: varchar("cta_url", { length: 500 }).notNull(),
+    isTest: boolean("is_test").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("content_operation_items_slug_unique").on(table.slug),
+    index("content_operation_items_campaign_idx").on(table.campaign),
+    index("content_operation_items_category_idx").on(table.category),
+  ],
+);
+
+export const contentChannelTasks = pgTable(
+  "content_channel_tasks",
+  {
+    id: serial("id").primaryKey(),
+    contentItemId: integer("content_item_id").notNull().references(() => contentOperationItems.id, { onDelete: "cascade" }),
+    channel: varchar("channel", { length: 32 }).notNull(),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+    status: varchar("status", { length: 32 }).notNull().default("draft"),
+    postCopy: text("post_copy").notNull(),
+    cardSlides: jsonb("card_slides").$type<string[]>(),
+    altText: text("alt_text"),
+    trackedUrl: varchar("tracked_url", { length: 2_000 }).notNull(),
+    publishedUrl: varchar("published_url", { length: 2_000 }),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    adminNote: text("admin_note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("content_channel_tasks_item_channel_unique").on(table.contentItemId, table.channel),
+    index("content_channel_tasks_schedule_status_idx").on(table.scheduledAt, table.status),
+    index("content_channel_tasks_channel_schedule_idx").on(table.channel, table.scheduledAt),
+  ],
+);
+
+export const contentNotificationDeliveries = pgTable(
+  "content_notification_deliveries",
+  {
+    id: serial("id").primaryKey(),
+    channelTaskId: integer("channel_task_id").notNull().references(() => contentChannelTasks.id, { onDelete: "cascade" }),
+    kind: varchar("kind", { length: 32 }).notNull(),
+    deduplicationKey: varchar("deduplication_key", { length: 240 }).notNull(),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+    status: varchar("status", { length: 16 }).notNull().default("sending"),
+    attempts: integer("attempts").notNull().default(0),
+    providerMessageId: varchar("provider_message_id", { length: 128 }),
+    errorCode: varchar("error_code", { length: 80 }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("content_notification_deliveries_dedup_unique").on(table.deduplicationKey),
+    index("content_notification_deliveries_status_schedule_idx").on(table.status, table.scheduledAt),
+    index("content_notification_deliveries_task_kind_idx").on(table.channelTaskId, table.kind),
+  ],
+);
+
+export const contentPerformanceSnapshots = pgTable(
+  "content_performance_snapshots",
+  {
+    id: serial("id").primaryKey(),
+    channelTaskId: integer("channel_task_id").notNull().references(() => contentChannelTasks.id, { onDelete: "cascade" }),
+    views: integer("views"),
+    likes: integer("likes"),
+    comments: integer("comments"),
+    saves: integer("saves"),
+    shares: integer("shares"),
+    linkClicks: integer("link_clicks"),
+    adminNote: text("admin_note"),
+    checkedAt: timestamp("checked_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("content_performance_task_checked_idx").on(table.channelTaskId, table.checkedAt),
+    check("content_performance_views_nonnegative", sql`${table.views} is null or ${table.views} >= 0`),
+    check("content_performance_likes_nonnegative", sql`${table.likes} is null or ${table.likes} >= 0`),
+    check("content_performance_comments_nonnegative", sql`${table.comments} is null or ${table.comments} >= 0`),
+    check("content_performance_saves_nonnegative", sql`${table.saves} is null or ${table.saves} >= 0`),
+    check("content_performance_shares_nonnegative", sql`${table.shares} is null or ${table.shares} >= 0`),
+    check("content_performance_clicks_nonnegative", sql`${table.linkClicks} is null or ${table.linkClicks} >= 0`),
   ],
 );
