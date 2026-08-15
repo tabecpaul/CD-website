@@ -6,6 +6,7 @@ import FourCompasses, { metadata as fourCompassesMetadata } from "@/content/blog
 import AiJobAnxiety, { metadata as aiJobAnxietyMetadata } from "@/content/blog/ko/ai-job-anxiety-checklist.mdx";
 import CareerTransition, { metadata as careerTransitionMetadata } from "@/content/blog/ko/before-career-transition.mdx";
 import CallingMoreThanJob, { metadata as callingMoreThanJobMetadata } from "@/content/blog/ko/calling-is-more-than-a-job.mdx";
+import DiscerningGodsWill, { metadata as discerningGodsWillMetadata } from "@/content/blog/ko/five-tests-for-discerning-gods-will.mdx";
 import { isPublished, validateBlogMetadata, type BlogCategorySlug, type BlogPostMetadata } from "../domain";
 
 export type BlogPost = { metadata: BlogPostMetadata; Content: ComponentType };
@@ -18,6 +19,7 @@ const candidates = [
   [aiJobAnxietyMetadata, AiJobAnxiety],
   [careerTransitionMetadata, CareerTransition],
   [callingMoreThanJobMetadata, CallingMoreThanJob],
+  [discerningGodsWillMetadata, DiscerningGodsWill],
 ] as const;
 
 const posts: BlogPost[] = candidates.map(([rawMetadata, Content]) => ({
