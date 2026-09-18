@@ -412,6 +412,35 @@ export const contentOperationItems = pgTable(
   ],
 );
 
+export const contentWorkflowItems = pgTable(
+  "content_workflow_items",
+  {
+    id: serial("id").primaryKey(),
+    sourceKey: varchar("source_key", { length: 240 }).notNull(),
+    title: varchar("title", { length: 240 }).notNull(),
+    contentAxis: varchar("content_axis", { length: 120 }).notNull(),
+    proposedPublishDate: date("proposed_publish_date").notNull(),
+    proposedCta: varchar("proposed_cta", { length: 160 }).notNull(),
+    driveFolderUrl: varchar("drive_folder_url", { length: 500 }).notNull(),
+    status: varchar("status", { length: 32 }).notNull().default("proposed"),
+    duplicateGate: varchar("duplicate_gate", { length: 16 }).notNull().default("unknown"),
+    siteFirstStatus: varchar("site_first_status", { length: 24 }).notNull().default("not_applicable"),
+    canonicalUrl: varchar("canonical_url", { length: 500 }),
+    adminNote: text("admin_note"),
+    approvedAt: timestamp("approved_at", { withTimezone: true }),
+    productionReadyAt: timestamp("production_ready_at", { withTimezone: true }),
+    sitePublishedAt: timestamp("site_published_at", { withTimezone: true }),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("content_workflow_items_source_key_unique").on(table.sourceKey),
+    index("content_workflow_items_status_date_idx").on(table.status, table.proposedPublishDate),
+    index("content_workflow_items_publish_date_idx").on(table.proposedPublishDate),
+  ],
+);
+
 export const contentChannelTasks = pgTable(
   "content_channel_tasks",
   {

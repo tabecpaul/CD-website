@@ -52,4 +52,7 @@
 ## 2~3개월 후 자동 게시 검토
 
 발행 일정 준수율, 누락률, 게시물당 운영 시간, 게시 직전 수정 빈도와 UTM 전환을 검토합니다. 반복성이 충분하고 플랫폼별 수정이 적을 때만 네이버·Meta·Threads 자동 게시를 별도 설계합니다.
+# Dashboard-Centric 운영 우선
+
+신규 정규 콘텐츠는 `dashboard-centric-content-workflow.md`의 제안 → Duplicate Gate → 관리자 승인 → 제작 완료 → Site-First → 수동 발행 → 완료 기록 순서를 먼저 적용한다. Drive와 이메일만으로 승인·READY·발행완료를 판정하지 않는다.
 
