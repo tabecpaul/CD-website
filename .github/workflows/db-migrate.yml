@@ -1,12 +1,8 @@
 name: Database Migration
 
-# Temporary one-time production restoration trigger. Revert to manual-only after this run.
+# Production migrations are reviewed and applied manually in Supabase.
+# Keep this workflow manual-only to avoid replaying migrations already applied there.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/db-migrate.yml"
   workflow_dispatch: {}
 
 jobs:
