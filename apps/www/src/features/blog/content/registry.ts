@@ -8,6 +8,15 @@ import CareerTransition, { metadata as careerTransitionMetadata } from "@/conten
 import CallingMoreThanJob, { metadata as callingMoreThanJobMetadata } from "@/content/blog/ko/calling-is-more-than-a-job.mdx";
 import DiscerningGodsWill, { metadata as discerningGodsWillMetadata } from "@/content/blog/ko/five-tests-for-discerning-gods-will.mdx";
 import GiftsTalentsStrengths, { metadata as giftsTalentsStrengthsMetadata } from "@/content/blog/ko/gifts-talents-strengths.mdx";
+import DecisionDelay, { metadata as decisionDelayMetadata } from "@/content/blog/ko/decision-delay-is-not-only-lack-of-information.mdx";
+import ValuesConflict, { metadata as valuesConflictMetadata } from "@/content/blog/ko/values-conflict-at-work.mdx";
+import CareerCriteria, { metadata as careerCriteriaMetadata } from "@/content/blog/ko/career-criteria-before-changing-jobs.mdx";
+import SustainableWork, { metadata as sustainableWorkMetadata } from "@/content/blog/ko/good-at-vs-sustainable-work.mdx";
+import ParentExpectations, { metadata as parentExpectationsMetadata } from "@/content/blog/ko/career-between-parent-expectations-and-self.mdx";
+import CareerGap, { metadata as careerGapMetadata } from "@/content/blog/ko/career-gap-as-evidence.mdx";
+import MajorChoice, { metadata as majorChoiceMetadata } from "@/content/blog/ko/major-choice-beyond-favorite-subject.mdx";
+import MinistryRole, { metadata as ministryRoleMetadata } from "@/content/blog/ko/calling-beyond-changing-ministry-role.mdx";
+import RetirementCareer, { metadata as retirementCareerMetadata } from "@/content/blog/ko/second-career-after-retirement.mdx";
 import { isPublished, validateBlogMetadata, type BlogCategorySlug, type BlogPostMetadata } from "../domain";
 
 export type BlogPost = { metadata: BlogPostMetadata; Content: ComponentType };
@@ -22,6 +31,15 @@ const candidates = [
   [callingMoreThanJobMetadata, CallingMoreThanJob],
   [discerningGodsWillMetadata, DiscerningGodsWill],
   [giftsTalentsStrengthsMetadata, GiftsTalentsStrengths],
+  [decisionDelayMetadata, DecisionDelay],
+  [valuesConflictMetadata, ValuesConflict],
+  [careerCriteriaMetadata, CareerCriteria],
+  [sustainableWorkMetadata, SustainableWork],
+  [parentExpectationsMetadata, ParentExpectations],
+  [careerGapMetadata, CareerGap],
+  [majorChoiceMetadata, MajorChoice],
+  [ministryRoleMetadata, MinistryRole],
+  [retirementCareerMetadata, RetirementCareer],
 ] as const;
 
 const posts: BlogPost[] = candidates.map(([rawMetadata, Content]) => ({
